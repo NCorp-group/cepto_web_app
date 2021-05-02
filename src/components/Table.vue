@@ -1,9 +1,9 @@
 <template>
-  <div class="container">
+  <div id="table" class="container">
     <h1>Karl Evan Brothens</h1>
-    <h2>Event Logs</h2>
+    <h4>Event Logs</h4>
     <form>
-      <div class="form-group">
+      <!-- <div class="form-group">
         <label for="event_type">Event</label>
         <input
           type="text"
@@ -38,7 +38,7 @@
           v-model="time_since_last_event"
           class="form-control"
         />
-      </div>
+      </div> -->
       <button type="button" @click="on_refresh" class="btn btn-dark">
         Refresh
       </button>
@@ -67,14 +67,12 @@
 </template>
 
 <script>
+import axios from 'axios'
 export default {
-  name: "Light Guide Logs",
+  name: "Event Table",
   data: () => ({ event_type: "", date: "", timestamp: "", time_since_last_event: "", events: [] }),
   methods: {
     on_refresh() {
-      axios
-        .get('https://api.coindesk.com/v1/bpi/currentprice.json')
-        .then(response => (this.info = response.data.bpi))
     },
     on_submit() {
       this.events.unshift({ event_type: this.event_type, date: this.date, timestamp: this.timestamp, time_since_last_event: this.time_since_last_event });
@@ -86,10 +84,31 @@ export default {
       this.timestamp = "";
       this.time_since_last_event = "";
     },
+    fetch_logs() {
+      axios.get('https://localhost:5001/Authenticate/%7B%22user%22:%22admin%22,%22pwd%22:%22password%22%7D')
+           .then(response => (this.events = response))
+           .catch(error => console.log(error));
+    },
+  },
+  mounted() {
+    this.fetch_logs();
   },
 };
 </script>
 
 <style>
-
+#table {
+  height: 100%;
+  flex-grow: 2;
+  padding: 0px 200px;
+  text-align: left;
+  color: #F6F6F6;
+  position: absolute;
+  margin-left: 200px;
+}
+button {
+  margin: 30px 10px 20px 0px;
+  padding: 10px 15px;
+  border-style: none;
+}
 </style>

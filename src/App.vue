@@ -1,21 +1,17 @@
 <template>
   <Table/>
+  <SidePanel/>
 </template>
 
 <script>
 import Table from './components/Table.vue'
+import SidePanel from './components/SidePanel.vue'
 
 export default {
   name: 'App',
   components: {
-    Table
+    Table,
+    SidePanel
   }
 }
 </script>
-
-<style>
-#app_table {
-  text-align: left;
-  color: #F6F6F6;
-}
-</style>
