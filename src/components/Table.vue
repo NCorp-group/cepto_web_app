@@ -2,7 +2,6 @@
   <div id="table" class="container">
     <h1>Karl Evan Brothens</h1>
     <h4>Event Logs</h4>
-    <div>{{ api_data }}</div>
     <form>
       <!-- <div class="form-group">
         <label for="event_type">Event</label>
@@ -75,12 +74,12 @@ export default {
   data: () => ({ event_type: "", date: "", timestamp: "", time_since_last_event: "", events: [], api_data: null }),
   methods: {
     on_refresh() {
+      this.clear_logs();
       this.fetch_logs();
       this.process_api_data();
     },
-    on_submit() {
-      this.events.unshift({ event_type: this.event_type, date: this.date, timestamp: this.timestamp, time_since_last_event: this.time_since_last_event });
-      this.clearForm();
+    clear_logs() {
+      this.events = [];
     },
     clearForm() {
       this.event_type = "";
@@ -90,11 +89,21 @@ export default {
     },
     fetch_logs() {
       axios.get('https://localhost:5001/FetchEvents/%7B%22session_token%22:%22601bc973-da4d-47cc-b3eb-4eb7c921bc48%22%7D')
-           .then(response => (this.api_data = response.data.total))
+           .then(response => (this.api_data = response.data))
            .catch(error => console.log(error));
     },
     process_api_data() {
-
+      for (let i = 0; i < this.api_data.events.length; i++) {
+        let new_event_type = this.api_data["events"][i].event_type;
+        console.log(new_event_type);
+        let new_date = this.api_data["events"][i].time;
+        console.log(new_date);
+        let new_timestamp = this.api_data["events"][i].time;
+        console.log(new_timestamp);
+        let new_time_since_last_event = this.api_data["events"][i].time_since_last;
+        console.log(new_time_since_last_event);
+        this.events.unshift({ event_type: new_event_type, date: new_date, timestamp: new_timestamp, time_since_last_event: new_time_since_last_event });
+      }
     }
   },
   mounted() {
@@ -118,5 +127,8 @@ button {
   margin: 30px 10px 20px 0px;
   padding: 10px 15px;
   border-style: none;
+}
+table > td {
+  padding: 5px;
 }
 </style>
