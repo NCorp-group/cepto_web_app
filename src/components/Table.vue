@@ -2,6 +2,7 @@
   <div id="table" class="container">
     <h1>Karl Evan Brothens</h1>
     <h4>Event Logs</h4>
+    <div>{{ api_data }}</div>
     <form>
       <!-- <div class="form-group">
         <label for="event_type">Event</label>
@@ -68,11 +69,14 @@
 
 <script>
 import axios from 'axios'
+
 export default {
-  name: "Event Table",
-  data: () => ({ event_type: "", date: "", timestamp: "", time_since_last_event: "", events: [] }),
+  name: "event-table",
+  data: () => ({ event_type: "", date: "", timestamp: "", time_since_last_event: "", events: [], api_data: null }),
   methods: {
     on_refresh() {
+      this.fetch_logs();
+      this.process_api_data();
     },
     on_submit() {
       this.events.unshift({ event_type: this.event_type, date: this.date, timestamp: this.timestamp, time_since_last_event: this.time_since_last_event });
@@ -85,13 +89,17 @@ export default {
       this.time_since_last_event = "";
     },
     fetch_logs() {
-      axios.get('https://localhost:5001/Authenticate/%7B%22user%22:%22admin%22,%22pwd%22:%22password%22%7D')
-           .then(response => (this.events = response))
+      axios.get('https://localhost:5001/FetchEvents/%7B%22session_token%22:%22601bc973-da4d-47cc-b3eb-4eb7c921bc48%22%7D')
+           .then(response => (this.api_data = response.data.total))
            .catch(error => console.log(error));
     },
+    process_api_data() {
+
+    }
   },
   mounted() {
     this.fetch_logs();
+    this.process_api_data();
   },
 };
 </script>
