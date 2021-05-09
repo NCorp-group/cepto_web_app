@@ -5,37 +5,32 @@
     <button type="button" @click="on_refresh" class="btn btn-dark">
       Refresh
     </button>
+    <button type="button" @click="on_log" class="btn btn-dark">
+      Print API data
+    </button>
     <table class="table mt-5">
       <thead>
         <tr>
           <th scope="col">VisitID</th>
           <th scope="col">EventID</th>
-          <th scope="col">Event</th>
+          <th scope="col">Event Type</th>
           <th scope="col">Date</th>
           <th scope="col">Timestamp</th>
           <th scope="col">Time since last event</th>
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(entry, i) in visits" :key="i">
+        <tr v-for="(visit, i) in visits" :key="i">
           <th scope="row">{{ visits.length - i++ }}</th>
           <tbody>
-            <tr v-for="(entry, j) in visits[i]" :key="j">
-              <th scope="row">{{ visits[i].length - i++ }}</th>
-              <td>{{ entry.event_type }}</td>
-              <td>{{ entry.date }}</td>
-              <td>{{ entry.timestamp }}</td>
-              <td>{{ entry.time_since_last_event }}</td>
+            <tr v-for="(event, j) in visits[i].events" :key="j">
+              <th scope="row">{{ visits[i].events.length - i++ }}</th>
+              <td>{{ event.type }}</td>
+              <td>{{ event.datetime.toLocaleDateString('da-DK') }}</td>
+              <td>{{ event.datetime.toLocaleDateString('da-DK') }}</td>
+              <td>{{ event.time_since_last }}</td>
             </tr>
           </tbody>
-        </tr>
-        <tr v-for="(entry, i) in events" :key="i">
-          <td>{{ entry.visit_id }}</td>
-          <th scope="row">{{ events.length - i++ }}</th>
-          <td>{{ entry.event_type }}</td>
-          <td>{{ entry.date }}</td>
-          <td>{{ entry.timestamp }}</td>
-          <td>{{ entry.time_since_last_event }}</td>
         </tr>
       </tbody>
     </table>
@@ -44,26 +39,123 @@
 
 <script>
 import axios from 'axios'
+//import Visit from 'visit.js'
+//import Event from 'event.js'
+
+class Visit {
+  constructor(state, visit_id, datetime, desc, duration, events) {
+      this.state = state;
+      this.visit_id = visit_id;
+      this.datetime = datetime;
+      this.desc = desc;
+      this.duration = duration;
+      this.events = events;
+  }
+}
+
+class Event {
+  constructor(type, datetime, time_since_last) {
+      this.type = type;
+      this.datetime = datetime;
+      this.time_since_last = time_since_last;
+  }
+}
 
 export default {
   name: "event-table",
-  data: () => ({ event_type: "", date: "", timestamp: "", time_since_last_event: "", events: [], visits: [], api_data: null }),
+  data: () => ({ visits: [], api_data: null }),
   methods: {
+    on_log() {
+      console.log(this.api_data);
+    },
     on_refresh() {
       //this.clear_logs();
       this.fetch_logs();
       this.process_api_data();
     },
     clear_logs() {
-      this.events = [];
+      this.visits = [];
     },
     fetch_logs() {
       axios.get('https://localhost:5001/FetchEvents/%7B%22session_token%22:%22601bc973-da4d-47cc-b3eb-4eb7c921bc48%22%7D')
         .then(response => this.api_data = response.data.events)
         .catch(error => console.log(error));
-      console.log(this.api_data);
     },
     process_api_data() {
+      // NEW IMPLEMENTATION
+
+      for (let i = 0; i < this.api_data.length; i++) {
+        var last_event = null;
+        var events = null;
+
+        while (last_event.visit_id === current_event.visit_id || i == 0) {
+
+          var current_date = new Date(this.api_data[i].time);
+          var current_since_last = new Date(this.api_data[i].time_since_last);
+
+          var current_event = Event(
+            this.api_data[i].event_type,
+            current_date,
+            current_since_last.getMinutes()
+          );
+
+          events.unshift(current_event);
+
+          last_event = current_event;
+
+          i++;
+        }
+
+        var state = "";
+        if (events.length < 4) {
+          state = "incomplete";
+        }
+        else if (events.length == 4) {
+          state = "complete";
+        }
+        else if (this.api_data.length === i && this.api_data[i].event_type !== "arrived_at_bed") {
+          state = "in_progress";
+        }
+        else {
+          console.log("More than 4 events in visit");
+        }
+
+        var duration = events[1].datetime.getTime() - events[events.length].datetime.getTime();
+        var duration_date = new Date(duration);
+        var duration_minutes = duration_date.getTime() / 1000 / 60;
+
+        var current_visit = new Visit(
+          state,
+          events[0].visit_id,
+          events[0].date,
+          state,
+          duration_minutes,
+          events
+        );
+
+        this.visits.unshift(current_visit);
+
+        events = [];
+      }
+
+      /*
+      for (let i = 0; i < this.api_data.length; i++) {
+        // Initialisation
+        var last_event = null;
+        if (i > 0) {
+          last_event = this.api_data[i-1];
+        }
+        var current_event = this.api_data[i];
+
+        // Per visit loop
+        var current_visit = [];
+        while (current_event.visit_id !== last_event.visit_id) {
+          
+        }
+      }
+      */
+      
+      /*
       // var current_visit_id = 0;
       for (let i = 0; i < this.api_data.length; i++) {
         // Initialisation
@@ -115,8 +207,14 @@ export default {
         }
         //console.log(new_time_since_last_event);
 
-        this.events.unshift({event_type: current_event_type, date: current_date, timestamp: current_timestamp, time_since_last_event: current_time_since_last_event });
+        this.events.unshift({
+          event_type: current_event_type,
+          date: current_date,
+          timestamp: current_timestamp,
+          time_since_last_event: current_time_since_last_event
+        });
       }
+      */
     }
   },
   mounted() {
