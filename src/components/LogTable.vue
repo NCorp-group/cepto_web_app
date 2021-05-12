@@ -39,8 +39,6 @@
 
 <script>
 import axios from 'axios'
-//import Visit from 'visit.js'
-//import Event from 'event.js'
 
 class Visit {
   constructor(state, visit_id, datetime, desc, duration, events) {
@@ -66,7 +64,7 @@ export default {
   data: () => ({ visits: [], api_data: null }),
   methods: {
     on_log() {
-      console.log(this.api_data);
+      console.log(this.visits);
     },
     on_refresh() {
       //this.clear_logs();
@@ -77,7 +75,7 @@ export default {
       this.visits = [];
     },
     fetch_logs() {
-      axios.get('https://10.9.2.221:5000/fetch_events/caregiver,caregiver')
+      axios.get('http://10.9.2.221:5000/fetch-events/caregiver,caregiver')
         .then(response => this.api_data = response.data.events)
         .catch(error => console.log(error));
     },
@@ -87,7 +85,9 @@ export default {
       for (let i = 0; i < this.api_data.length; i++) {
         var last_event = null;
         var events = null;
-
+        if (last_event == null) {
+          continue;
+        }
         while (last_event.visit_id === current_event.visit_id || i == 0) {
 
           var current_date = new Date(this.api_data[i].time);
