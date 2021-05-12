@@ -1,23 +1,10 @@
 <template>
-  <LoginScreen/>
-  <Table/>
-  <SidePanel/>
+  <div id="nav">
+    <router-link to="/login">Go to login</router-link>
+    <router-link to="/logs">Go to logs</router-link>
+  </div>
+  <router-view/>
 </template>
-
-<script>
-import Table from './components/LogTable.vue'
-import SidePanel from './components/SidePanel.vue'
-import LoginScreen from './components/LoginScreen.vue'
-
-export default {
-  name: 'App',
-  components: {
-    Table,
-    SidePanel,
-    LoginScreen
-  }
-}
-</script>
 
 <style>
 .container {

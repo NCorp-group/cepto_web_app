@@ -1,6 +1,12 @@
 // vue config file
 // module.exports = {
 //     devServer: {
-//         runtimeCompiler: true
+//         https: false
 //     }
 // } 
+
+module.exports = {
+    devServer: {
+        https: false
+    }
+};

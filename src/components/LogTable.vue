@@ -77,7 +77,7 @@ export default {
       this.visits = [];
     },
     fetch_logs() {
-      axios.get('https://localhost:5001/FetchEvents/%7B%22session_token%22:%22601bc973-da4d-47cc-b3eb-4eb7c921bc48%22%7D')
+      axios.get('https://10.9.2.221:5000/fetch_events/caregiver,caregiver')
         .then(response => this.api_data = response.data.events)
         .catch(error => console.log(error));
     },
@@ -224,7 +224,7 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 #table {
   height: 100%;
   flex-grow: 2;
