@@ -62,7 +62,7 @@ class Event {
 }
 
 export default {
-  name: "event-table",
+  name: "LogTable",
   data: () => ({ visits: [], api_data: null }),
   methods: {
     on_log() {
