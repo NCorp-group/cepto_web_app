@@ -11,13 +11,13 @@ const routes = [
         path: "/login",
         name: "login",
         component: LoginScreen,
-        beforeEnter: [determine_transition]
+        meta: { transition: 'fade' }
     },
     {
         path: "/logs",
         name: "logs",
         component: LogsScreen,
-        beforeEnter: [determine_transition]
+        meta: { transition: 'slide-down' }
     }
 ];
 
@@ -26,12 +26,12 @@ const router = createRouter({
     routes
 })
 
-function determine_transition() {
-    router.afterEach((to, from) => {
-        const toDepth = to.path.split('/').length
-        const fromDepth = from.path.split('/').length
-        to.meta.transitionName = toDepth < fromDepth ? 'slide-right' : 'slide-left'
-    })
-}
+// function determine_transition() {
+//     router.afterEach((to, from) => {
+//         const toDepth = to.path.split('/').length
+//         const fromDepth = from.path.split('/').length
+//         to.meta.transitionName = toDepth < fromDepth ? 'slide-right' : 'slide-left'
+//     })
+// }
 
 export default router

@@ -4,7 +4,7 @@
     <router-link to="/logs">Go to logs</router-link>
   </div>
   <router-view v-slot="{ Component, route }">
-    <transition :name="route.meta.transitionName">
+    <transition :name="route.meta.transition || 'fade'">
       <component :is="Component"/>
     </transition>
   </router-view>
@@ -68,16 +68,16 @@
   opacity: 0;
 }
 
-.slide-right-enter-active, .slide-left-enter-active {
+.slide-right-enter-active, .slide-left-enter-active, .slide-down-enter-active {
   transition: all 0.3s ease;
 }
-.slide-right-leave-active, .slide-left-leave-active {
+.slide-right-leave-active, .slide-left-leave-active, .slide-down-leave-active {
   transition: all 0.3s ease;
 }
 .slide-right-fade-enter, .slide-right-leave-to {
-  transform: translateX(100px);
+  transform: translateY(100vh);
 }
-.slide-left-fade-enter, .slide-left-leave-to {
-  transform: translateX(-100px);
+.slide-down-fade-enter, .slide-down-leave-to {
+  transform: translateY(-100vh);
 }
 </style>
