@@ -1,14 +1,16 @@
 <template>
-  <div id="login-box">
-    <img src="../assets/logo_85_white.png" alt="CEPTO">
-    <form spellcheck="false" action="">
-      <input type="text" name="username" v-model="input.username" placeholder="Username" />
-      <input type="password" name="password" v-model="input.password" placeholder="Password" />
-      <router-link to="/logs">
-        <button class="btn full-width" type="button" @click="on_login">Sign In</button>
-      </router-link>
-    </form>
-  </div>
+  <transition name="fade">
+    <div id="login-box">
+      <img src="../assets/logo_85_white.png" alt="CEPTO">
+      <form spellcheck="false" action="">
+        <input type="text" name="username" v-model="input.username" placeholder="Username" />
+        <input type="password" name="password" v-model="input.password" placeholder="Password" />
+        <router-link to="/logs">
+          <button class="btn full-width" type="button" @click="on_login">Sign In</button>
+        </router-link>
+      </form>
+    </div>
+  </transition>
 </template>
 
 <script>

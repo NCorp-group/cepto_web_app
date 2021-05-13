@@ -1,42 +1,44 @@
 <template>
-  <div id="logs-wrapper" class="center-content">
-    <div id="logs">
-      <h1>Patient Name</h1>
-      <h4>Event Logs</h4>
-      <button class="btn" type="button" @click="on_refresh">
-        Refresh
-      </button>
-      <button class="btn" type="button" @click="on_log">
-        Print API data
-      </button>
-      <table class="table mt-5">
-        <thead>
-          <tr>
-            <th scope="col">VisitID</th>
-            <th scope="col">EventID</th>
-            <th scope="col">Event Type</th>
-            <th scope="col">Date</th>
-            <th scope="col">Timestamp</th>
-            <th scope="col">Time since last event</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="(visit, i) in visits" :key="i">
-            <th scope="row">{{ visits.length - i++ }}</th>
-            <tbody>
-              <tr v-for="(event, j) in visits[i].events" :key="j">
-                <th scope="row">{{ visits[i].events.length - i++ }}</th>
-                <td>{{ event.type }}</td>
-                <td>{{ event.datetime.toLocaleDateString('da-DK') }}</td>
-                <td>{{ event.datetime.toLocaleDateString('da-DK') }}</td>
-                <td>{{ event.time_since_last }}</td>
-              </tr>
-            </tbody>
-          </tr>
-        </tbody>
-      </table>
+  <transition name="slide-fade">
+    <div id="logs-wrapper" class="center-content">
+      <div id="logs">
+        <h1>Patient Name</h1>
+        <h4>Event Logs</h4>
+        <button class="btn" type="button" @click="on_refresh">
+          Refresh
+        </button>
+        <button class="btn" type="button" @click="on_log">
+          Print API data
+        </button>
+        <table class="table mt-5">
+          <thead>
+            <tr>
+              <th scope="col">VisitID</th>
+              <th scope="col">EventID</th>
+              <th scope="col">Event Type</th>
+              <th scope="col">Date</th>
+              <th scope="col">Timestamp</th>
+              <th scope="col">Time since last event</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(visit, i) in visits" :key="i">
+              <th scope="row">{{ visits.length - i++ }}</th>
+              <tbody>
+                <tr v-for="(event, j) in visits[i].events" :key="j">
+                  <th scope="row">{{ visits[i].events.length - i++ }}</th>
+                  <td>{{ event.type }}</td>
+                  <td>{{ event.datetime.toLocaleDateString('da-DK') }}</td>
+                  <td>{{ event.datetime.toLocaleDateString('da-DK') }}</td>
+                  <td>{{ event.time_since_last }}</td>
+                </tr>
+              </tbody>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
-  </div>
+  </transition>
 </template>
 
 <script>
