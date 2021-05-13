@@ -3,10 +3,10 @@
     <div id="logs">
       <h1>Patient Name</h1>
       <h4>Event Logs</h4>
-      <button type="button" @click="on_refresh" class="btn btn-dark">
+      <button class="btn" type="button" @click="on_refresh">
         Refresh
       </button>
-      <button type="button" @click="on_log" class="btn btn-dark">
+      <button class="btn" type="button" @click="on_log">
         Print API data
       </button>
       <table class="table mt-5">
