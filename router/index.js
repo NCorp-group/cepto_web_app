@@ -17,7 +17,7 @@ const routes = [
         path: "/logs",
         name: "logs",
         component: LogsScreen,
-        meta: { transition: 'slide-fade-right' }
+        meta: { transition: 'slide-fade-left' }
     }
 ];
 
