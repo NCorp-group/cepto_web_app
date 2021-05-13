@@ -3,7 +3,11 @@
     <router-link to="/login">Go to login</router-link>
     <router-link to="/logs">Go to logs</router-link>
   </div>
-  <router-view/>
+  <router-view v-slot="{ Component, route }">
+    <transition :name="route.meta.transitionName">
+      <component :is="Component"/>
+    </transition>
+  </router-view>
 </template>
 
 <style>
@@ -59,9 +63,21 @@
 .slide-fade-leave-active {
   transition: all .3s cubic-bezier(1.0, 0.5, 0.8, 1.0);
 }
-.slide-fade-enter, .slide-fade-leave-to
-/* .slide-fade-leave-active below version 2.1.8 */ {
+.slide-fade-enter, .slide-fade-leave-to {
   transform: translateX(10px);
   opacity: 0;
+}
+
+.slide-right-enter-active, .slide-left-enter-active {
+  transition: all 0.3s ease;
+}
+.slide-right-leave-active, .slide-left-leave-active {
+  transition: all 0.3s ease;
+}
+.slide-right-fade-enter, .slide-right-leave-to {
+  transform: translateX(100px);
+}
+.slide-left-fade-enter, .slide-left-leave-to {
+  transform: translateX(-100px);
 }
 </style>

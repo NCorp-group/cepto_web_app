@@ -1,17 +1,15 @@
 <template>
-  <transition name="slide-fade">
-    <div id="sidepanel">
-      <div id="user-list">
-        <h2>Patients</h2>
-        <h4>User List</h4>
-      </div>
-      <div id="options-panel">
-        <router-link to="/login">
-          <button class="btn full-width">Sign Out</button>
-        </router-link>
-      </div>
+  <div id="sidepanel">
+    <div id="user-list">
+      <h2>Patients</h2>
+      <h4>User List</h4>
     </div>
-  </transition>
+    <div id="options-panel">
+      <router-link to="/login">
+        <button class="btn full-width">Sign Out</button>
+      </router-link>
+    </div>
+  </div>
 </template>
 
 <script>

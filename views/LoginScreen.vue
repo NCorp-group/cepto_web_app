@@ -1,7 +1,7 @@
 <template>
-    <div class="center-content full-screen">
-      <LoginBox/>
-    </div>
+  <div class="center-content full-screen">
+    <LoginBox/>
+  </div>
 </template>
 
 <script>
