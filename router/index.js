@@ -11,13 +11,13 @@ const routes = [
         path: "/login",
         name: "login",
         component: LoginScreen,
-        meta: { transition: 'fade' }
+        meta: { transition: 'slide-fade-right' }
     },
     {
         path: "/logs",
         name: "logs",
         component: LogsScreen,
-        meta: { transition: 'slide-down' }
+        meta: { transition: 'slide-fade-right' }
     }
 ];
 

@@ -1,8 +1,8 @@
 <template>
-  <div id="nav">
+  <!-- <div id="nav">
     <router-link to="/login">Go to login</router-link>
     <router-link to="/logs">Go to logs</router-link>
-  </div>
+  </div> -->
   <router-view v-slot="{ Component, route }">
     <transition :name="route.meta.transition || 'fade'">
       <component :is="Component"/>
@@ -49,14 +49,16 @@
 .btn.full-width {
   width: 100%;
 }
+
+/* FADE */
 .fade-enter-active, .fade-leave-active {
   transition: opacity .5s;
 }
 .fade-enter, .fade-leave-to {
   opacity: 0;
 }
-/* Enter and leave animations can use different */
-/* durations and timing functions.              */
+
+/* SLIDE RIGHT FADE */
 .slide-fade-enter-active {
   transition: all .3s ease;
 }
@@ -67,7 +69,19 @@
   transform: translateX(10px);
   opacity: 0;
 }
+/* SLIDE UP FADE */
+.slide-fade-right-enter-active {
+  transition: all .3s ease;
+}
+.slide-fade-right-leave-active {
+  transition: all .3s cubic-bezier(1.0, 0.5, 0.8, 1.0);
+}
+.slide-fade-right-enter, .slide-fade-right-leave-to {
+  transform: translateX(10px);
+  opacity: 0;
+}
 
+/* SLIDE DOWN or UP */
 .slide-right-enter-active, .slide-left-enter-active, .slide-down-enter-active {
   transition: all 0.3s ease;
 }
