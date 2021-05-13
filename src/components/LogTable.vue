@@ -1,39 +1,41 @@
 <template>
-  <div id="table" class="container">
-    <h1>Patient Name</h1>
-    <h4>Event Logs</h4>
-    <button type="button" @click="on_refresh" class="btn btn-dark">
-      Refresh
-    </button>
-    <button type="button" @click="on_log" class="btn btn-dark">
-      Print API data
-    </button>
-    <table class="table mt-5">
-      <thead>
-        <tr>
-          <th scope="col">VisitID</th>
-          <th scope="col">EventID</th>
-          <th scope="col">Event Type</th>
-          <th scope="col">Date</th>
-          <th scope="col">Timestamp</th>
-          <th scope="col">Time since last event</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="(visit, i) in visits" :key="i">
-          <th scope="row">{{ visits.length - i++ }}</th>
-          <tbody>
-            <tr v-for="(event, j) in visits[i].events" :key="j">
-              <th scope="row">{{ visits[i].events.length - i++ }}</th>
-              <td>{{ event.type }}</td>
-              <td>{{ event.datetime.toLocaleDateString('da-DK') }}</td>
-              <td>{{ event.datetime.toLocaleDateString('da-DK') }}</td>
-              <td>{{ event.time_since_last }}</td>
-            </tr>
-          </tbody>
-        </tr>
-      </tbody>
-    </table>
+  <div id="logs-wrapper" class="center-content">
+    <div id="logs">
+      <h1>Patient Name</h1>
+      <h4>Event Logs</h4>
+      <button type="button" @click="on_refresh" class="btn btn-dark">
+        Refresh
+      </button>
+      <button type="button" @click="on_log" class="btn btn-dark">
+        Print API data
+      </button>
+      <table class="table mt-5">
+        <thead>
+          <tr>
+            <th scope="col">VisitID</th>
+            <th scope="col">EventID</th>
+            <th scope="col">Event Type</th>
+            <th scope="col">Date</th>
+            <th scope="col">Timestamp</th>
+            <th scope="col">Time since last event</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(visit, i) in visits" :key="i">
+            <th scope="row">{{ visits.length - i++ }}</th>
+            <tbody>
+              <tr v-for="(event, j) in visits[i].events" :key="j">
+                <th scope="row">{{ visits[i].events.length - i++ }}</th>
+                <td>{{ event.type }}</td>
+                <td>{{ event.datetime.toLocaleDateString('da-DK') }}</td>
+                <td>{{ event.datetime.toLocaleDateString('da-DK') }}</td>
+                <td>{{ event.time_since_last }}</td>
+              </tr>
+            </tbody>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 </template>
 
@@ -69,7 +71,7 @@ export default {
     on_refresh() {
       //this.clear_logs();
       this.fetch_logs();
-      this.process_api_data();
+      //this.process_api_data();
     },
     clear_logs() {
       this.visits = [];
@@ -77,6 +79,7 @@ export default {
     fetch_logs() {
       axios.get('http://10.9.2.221:5000/fetch-events/caregiver,caregiver')
         .then(response => this.api_data = response.data.events)
+        .then(this.process_api_data)
         .catch(error => console.log(error));
     },
     process_api_data() {
@@ -219,20 +222,22 @@ export default {
   },
   mounted() {
     this.fetch_logs();
-    this.process_api_data();
+    //this.process_api_data();
   },
 };
 </script>
 
 <style scoped>
-#table {
+#logs-wrapper {
+  flex-grow: 5;
+}
+#logs {
   height: 100%;
-  flex-grow: 2;
   padding: 0px 200px;
   text-align: left;
   color: #F6F6F6;
-  position: absolute;
-  margin-left: 200px;
+  /* position: absolute; */
+  /* margin-left: 200px; */
 }
 button {
   margin: 30px 10px 20px 0px;

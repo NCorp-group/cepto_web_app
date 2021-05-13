@@ -7,14 +7,17 @@
 </template>
 
 <style>
-.container {
+.full-screen {
   height: 100vh;
   width: 100vw;
 }
-
 .center-content {
   display: flex;
   justify-content: center;
   align-content: center;
+}
+#nav {
+  position: absolute;
+  z-index: 100;
 }
 </style>
