@@ -72,13 +72,21 @@
 /* SLIDE UP FADE */
 .slide-fade-right-enter-active {
   transition: all .3s ease;
+  transition-delay: .3s;
 }
 .slide-fade-right-leave-active {
   transition: all .3s cubic-bezier(1.0, 0.5, 0.8, 1.0);
 }
-.slide-fade-right-enter, .slide-fade-right-leave-to {
+.slide-fade-right-enter-from {
+  transform: translateX(-10px);
+  opacity: 0;
+}
+.slide-fade-right-leave-to {
   transform: translateX(10px);
   opacity: 0;
+}
+.slide-fade-right-leave-from, .slide-fade-right-enter-to {
+  opacity: 1;
 }
 
 /* SLIDE DOWN or UP */
