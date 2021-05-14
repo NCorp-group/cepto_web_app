@@ -7,6 +7,7 @@
       <router-link to="/logs">
         <button class="btn full-width" type="button" @click="on_login">Sign In</button>
       </router-link>
+      <div @click="on_print">Credential Test Print</div>
     </form>
   </div>
 </template>
@@ -15,12 +16,16 @@
 export default {
   name: 'LoginBox',
   data() {
-  return {input: {username: "", password: ""}};
+    return {input: {username: "", password: ""}};
   },
   methods: {
-  on_login() {
-    return;
-  }
+    on_login() {
+      this.$username = this.username;
+      this.$password = this.password;
+    },
+    on_print() {
+      console.log("Username: " + this.username + "\nPassword: " + this.password);
+    }
   }
 }
 </script>
