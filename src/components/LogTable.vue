@@ -232,8 +232,9 @@ export default {
   flex-grow: 5;
 }
 #logs {
-  height: 100%;
+  /* height: 100%; */
   padding: 0px 200px;
+  width: 100%;
   text-align: left;
   color: #F6F6F6;
   /* position: absolute; */

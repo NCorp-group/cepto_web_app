@@ -20,7 +20,6 @@ export default {
 <style>
 #sidepanel {
   position: relative;
-  height: 100%;
   flex-grow: 1;
   background-color: #2F2F2F;
   box-shadow: 0px 0px 8px 0px black;
