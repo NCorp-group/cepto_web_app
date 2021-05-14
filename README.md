@@ -1,4 +1,4 @@
-# cepto_web_app
+# CEPTO Web Application
 
 ## Project setup
 ```
