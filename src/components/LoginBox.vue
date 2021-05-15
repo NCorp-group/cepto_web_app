@@ -30,8 +30,8 @@ export default {
   methods: {
     on_login() {
       if(this.check_credentials()) {
-        this.$input.username = this.input.username;
-        this.$input.password = this.input.password;
+        this.$user.username = this.input.username;
+        this.$user.password = this.input.password;
 
         router.push({ path: "/logs" });
 

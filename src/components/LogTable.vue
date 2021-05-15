@@ -78,7 +78,7 @@ export default {
     },
     fetch_logs() {
       this.$http.command = "fetch-events";
-      axios.get("http://" + this.$http.ip + "/" + this.$http.command + "/" + this.$input.username + "," + this.$input.password)
+      axios.get("http://" + this.$http.ip + "/" + this.$http.command + "/" + this.$user.username + "," + this.$user.password)
         .then(response => this.api_data = response.data.events)
         .then(this.process_api_data)
         .catch(error => console.log(error));

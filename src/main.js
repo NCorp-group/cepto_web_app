@@ -25,7 +25,7 @@ const app = createApp(App);
 // app.config.globalProperties.$input.username = "";
 // app.config.globalProperties.$input.password = "";
 
-app.config.globalProperties.$input = {
+app.config.globalProperties.$user = {
     username: "",
     password: ""
 }
