@@ -1,5 +1,5 @@
 <template>
-  <div id="flex-wrapper" class="full-screen">
+  <div class="full-screen flex-row-start">
     <SidePanel/>
     <LogTable/>
   </div>
@@ -19,13 +19,5 @@ export default {
 </script>
 
 <style scoped>
-#flex-wrapper {
-  /* width: 100%;
-  height: 100%; */
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-start;
-  align-content: flex-start;
-  /* flex-wrap: nowrap; */
-}
+
 </style>

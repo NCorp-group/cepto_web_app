@@ -7,7 +7,6 @@
       <router-link to="/logs">
         <button class="btn full-width" type="button" @click="on_login">Sign In</button>
       </router-link>
-      <div @click="on_print">Credential Test Print</div>
     </form>
   </div>
 </template>
@@ -20,11 +19,8 @@ export default {
   },
   methods: {
     on_login() {
-      this.$username = this.username;
-      this.$password = this.password;
-    },
-    on_print() {
-      console.log("Username: " + this.username + "\nPassword: " + this.password);
+      this.$input.username = this.input.username;
+      this.$input.password = this.input.password;
     }
   }
 }

@@ -16,6 +16,12 @@
   justify-content: center;
   align-content: center;
 }
+.flex-row-start {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-content: flex-start;
+}
 #nav {
   position: absolute;
   z-index: 100;

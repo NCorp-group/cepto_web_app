@@ -22,8 +22,13 @@ import router from '../router'
 
 const app = createApp(App);
 
-app.config.globalProperties.$username = "";
-app.config.globalProperties.$password = "";
+// app.config.globalProperties.$input.username = "";
+// app.config.globalProperties.$input.password = "";
+
+app.config.globalProperties.$input = {
+    username: "",
+    password: ""
+}
 
 app.use(router).mount('#app')
 // createApp(App).use(router).mount('#app')
