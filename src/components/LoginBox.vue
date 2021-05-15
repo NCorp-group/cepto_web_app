@@ -11,8 +11,6 @@
 </template>
 
 <script>
-import router from '../../router'
-
 export default {
   name: 'LoginBox',
   data() {
@@ -33,7 +31,7 @@ export default {
         this.$user.username = this.input.username;
         this.$user.password = this.input.password;
 
-        router.push({ path: "/logs" });
+        this.$router.push({ path: "/logs" });
 
         console.log("Credentials authenticated");
         this.feedback.color = "transparent";
