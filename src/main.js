@@ -30,5 +30,16 @@ app.config.globalProperties.$input = {
     password: ""
 }
 
+app.config.globalProperties.$accounts = [
+    {
+        username: "caregiver",
+        password: "caregiver"
+    },
+    {
+        username: "test",
+        password: "test"
+    }
+]
+
 app.use(router).mount('#app')
 // createApp(App).use(router).mount('#app')

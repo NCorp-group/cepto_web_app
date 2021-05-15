@@ -4,23 +4,63 @@
     <form spellcheck="false" action="">
       <input type="text" name="username" v-model="input.username" placeholder="Username" />
       <input type="password" name="password" v-model="input.password" placeholder="Password" />
-      <router-link to="/logs">
-        <button class="btn full-width" type="button" @click="on_login">Sign In</button>
-      </router-link>
+      <p id="feedback" v-bind:style="{ color: feedback.color }">{{ feedback.text }}</p>
+      <button class="btn full-width" type="button" @click="on_login">Sign In</button>
     </form>
   </div>
 </template>
 
 <script>
+import router from '../../router'
+
 export default {
   name: 'LoginBox',
   data() {
-    return {input: {username: "", password: ""}};
+    return {
+      input: {
+        username: "",
+        password: ""
+      },
+      feedback: {
+        color: "transparent",
+        text: "No input"
+      }
+    };
   },
   methods: {
     on_login() {
-      this.$input.username = this.input.username;
-      this.$input.password = this.input.password;
+      if(this.check_credentials()) {
+        this.$input.username = this.input.username;
+        this.$input.password = this.input.password;
+
+        router.push({ path: "/logs" });
+
+        console.log("Credentials authenticated");
+        this.feedback.color = "transparent";
+        this.feedback.text = "Credentials authenticated";
+      }
+      else {
+        console.log("Wrong credentials");
+
+        this.feedback.color = "red";
+        this.feedback.text = "Wrong Credentials";
+      }
+      this.clear_credentials();
+    },
+    check_credentials() {
+      var is_match = false;
+      this.$accounts.forEach(account => {
+        if (this.input.username === account.username &&
+            this.input.password === account.password) {
+          console.log("true");
+          is_match = true;
+        }
+      });
+      return is_match;
+    },
+    clear_credentials() {
+      this.input.username = "";
+      this.input.password = "";
     }
   }
 }
@@ -60,5 +100,8 @@ export default {
 }
 #login-box > form > a > button {
   margin: 60px 0 0 0;
+}
+#feedback {
+  color: transparent;
 }
 </style>
