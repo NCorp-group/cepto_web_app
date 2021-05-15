@@ -77,7 +77,8 @@ export default {
       this.visits = [];
     },
     fetch_logs() {
-      axios.get('http://10.9.2.221:5000/fetch-events/caregiver,caregiver')
+      this.$http.command = "fetch-events";
+      axios.get("http://" + this.$http.ip + "/" + this.$http.command + "/" + this.$input.username + "," + this.$input.password)
         .then(response => this.api_data = response.data.events)
         .then(this.process_api_data)
         .catch(error => console.log(error));

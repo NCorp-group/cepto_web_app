@@ -41,5 +41,10 @@ app.config.globalProperties.$accounts = [
     }
 ]
 
+app.config.globalProperties.$http = {
+    ip: "localhost",
+    command: "fecth-events"
+}
+
 app.use(router).mount('#app')
 // createApp(App).use(router).mount('#app')
