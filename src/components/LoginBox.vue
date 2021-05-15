@@ -27,23 +27,32 @@ export default {
   },
   methods: {
     on_login() {
-      if(this.check_credentials()) {
+      if ((this.input.username == "" || this.input.username == null) &&
+           this.input.password == "" || this.input.password == null) {
+        this.feedback.color = "red";
+        this.feedback.text = "No credentials were given";
+        
+        console.log(this.feedback.text);
+      }
+      else if(this.check_credentials()) {
         this.$user.username = this.input.username;
         this.$user.password = this.input.password;
 
         this.$router.push({ path: "/logs" });
 
-        console.log("Credentials authenticated");
         this.feedback.color = "transparent";
         this.feedback.text = "Credentials authenticated";
+
+        console.log(this.feedback.text);
+
+        this.clear_credentials();
       }
       else {
-        console.log("Wrong credentials");
-
         this.feedback.color = "red";
         this.feedback.text = "Wrong Credentials";
+        
+        console.log(this.feedback.text);
       }
-      this.clear_credentials();
     },
     check_credentials() {
       var is_match = false;
