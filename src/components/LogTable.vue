@@ -9,7 +9,17 @@
       <button class="btn" type="button" @click="on_log">
         Print API data
       </button>
-      <table class="table mt-5">
+      <ul id="visit-list">
+        <li v-for="event in data.events" v-bind:key="event">
+          <div id="visit-header">
+            {{ event.visit_id }}
+          </div>
+          <div id="visit-events">
+            {{ event.event_type }}
+          </div>
+        </li>
+      </ul>
+      <!-- <table class="table mt-5">
         <thead>
           <tr>
             <th scope="col">VisitID</th>
@@ -34,13 +44,14 @@
             </tbody>
           </tr>
         </tbody>
-      </table>
+      </table>  -->
     </div>
   </div>
 </template>
 
 <script>
 import axios from 'axios'
+//import json_data from "../assets/test_logs.js"
 
 class Visit {
   constructor(state, visit_id, datetime, desc, duration, events) {
@@ -63,10 +74,71 @@ class Event {
 
 export default {
   name: "LogTable",
-  data: () => ({ visits: [], api_data: null }),
+  data: () => ({ visits: [], api_data: null, data: {
+    "events": [
+        {
+            "event_type": "left_bed",
+            "patient_full_name": "test_patient",
+            "patient_id": 2,
+            "timestamp": "2021-05-12T15:45:10.000000",
+            "visit_id": 1
+        },
+        {
+            "event_type": "left_bed",
+            "patient_full_name": "test_patient",
+            "patient_id": 3,
+            "timestamp": "2021-05-12T15:45:12.000000",
+            "visit_id": 1
+        },
+        {
+            "event_type": "left_bed",
+            "patient_full_name": "test_patient",
+            "patient_id": 4,
+            "timestamp": "2021-05-12T15:45:26.000000",
+            "visit_id": 1
+        },
+        {
+            "event_type": "left_bed",
+            "patient_full_name": "test_patient",
+            "patient_id": 5,
+            "timestamp": "2021-05-12T15:45:27.000000",
+            "visit_id": 2
+        },
+        {
+            "event_type": "arrived_at_bed",
+            "patient_full_name": "test_patient",
+            "patient_id": 5,
+            "timestamp": "2021-05-16T08:51:03.000000",
+            "visit_id": 2
+        },
+        {
+            "event_type": "arrived_at_bathroom",
+            "patient_full_name": "test_patient",
+            "patient_id": 5,
+            "timestamp": "2021-05-16T08:51:58.000000",
+            "visit_id": 2
+        },
+        {
+            "event_type": "arrived_at_bed",
+            "patient_full_name": "test_patient",
+            "patient_id": 5,
+            "timestamp": "2021-05-16T08:52:54.000000",
+            "visit_id": 2
+        },
+        {
+            "event_type": "left_bathroom",
+            "patient_full_name": "test_patient",
+            "patient_id": 5,
+            "timestamp": "2021-05-16T08:53:13.000000",
+            "visit_id": 3
+        }
+    ],
+    "success": true
+}}),
   methods: {
     on_log() {
       console.log(this.api_data);
+      this.process_api_data();
     },
     on_refresh() {
       //this.clear_logs();
@@ -82,9 +154,12 @@ export default {
         .then(response => this.api_data = response.data.events)
         .catch(error => console.log(error));
     },
+    process_data() {
+      // for (let i = 0; i < data.events.length; i++) {
+      //   return;
+      // }
+    },
     process_api_data() {
-      // NEW IMPLEMENTATION
-
       for (let i = 0; i < this.api_data.length; i++) {
         var last_event = null;
         var events = null;
@@ -239,12 +314,30 @@ export default {
   /* position: absolute; */
   /* margin-left: 200px; */
 }
+#visit-list {
+  list-style: none;
+  padding: 0;
+}
+#visit-list li {
+  background-color: #272727;
+  border-radius: 10px;
+  box-shadow: 0 3px 6px #191919;
+  overflow: hidden;
+  margin: 20px 0;
+}
+#visit-list > li > div {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 20px;
+}
+#visit-header {
+  background-color: #2F2F2F;
+  border-radius: 10px;
+}
 button {
   margin: 30px 10px 20px 0px;
-  padding: 10px 15px;
-  border-style: none;
 }
-table > td {
+/* table > td {
   padding: 5px;
-}
+} */
 </style>
