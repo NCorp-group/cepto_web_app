@@ -3,19 +3,18 @@
     <div id="logs">
       <h1>Patient Name</h1>
       <h4>Event Logs</h4>
-      <button class="btn" type="button" @click="on_refresh">
+      <button class="btn" type="button" @click="process_data">
         Refresh
       </button>
-      <button class="btn" type="button" @click="on_log">
-        Print API data
+      <button class="btn" type="button" @click="print_data">
+        Print visits
       </button>
       <ul id="visit-list">
-        <li v-for="event in data.events" v-bind:key="event">
+        <li v-for="visit in visits" v-bind:key="visit">
           <div id="visit-header">
-            {{ event.visit_id }}
+            {{ visit.id }}
           </div>
           <div id="visit-events">
-            {{ event.event_type }}
           </div>
         </li>
       </ul>
@@ -65,7 +64,8 @@ class Visit {
 }
 
 class Event {
-  constructor(type, datetime, time_since_last) {
+  constructor(visit_id, type, datetime, time_since_last) {
+      this.visit_id = visit_id;
       this.type = type;
       this.datetime = datetime;
       this.time_since_last = time_since_last;
@@ -123,7 +123,7 @@ export default {
             "patient_full_name": "test_patient",
             "patient_id": 5,
             "timestamp": "2021-05-16T08:52:54.000000",
-            "visit_id": 2
+            "visit_id": 3
         },
         {
             "event_type": "left_bathroom",
@@ -140,6 +140,9 @@ export default {
       console.log(this.api_data);
       this.process_api_data();
     },
+    print_data() {
+      console.log(this.visits);
+    },
     on_refresh() {
       //this.clear_logs();
       this.fetch_logs();
@@ -154,10 +157,86 @@ export default {
         .then(response => this.api_data = response.data.events)
         .catch(error => console.log(error));
     },
+    create_event(raw_event) {
+      var date = new Date(raw_event.timestamp);
+      var since_last = new Date(raw_event.timestamp);
+
+      var event = new Event(
+        raw_event.visit_id,
+        raw_event.event_type,
+        date,
+        since_last.getMinutes()
+      );
+
+      return event;
+    },
     process_data() {
-      // for (let i = 0; i < data.events.length; i++) {
-      //   return;
-      // }
+      console.log(this.data.events);
+      console.log(this.data.events.length);
+      for (let i = 0; i < this.data.events.length; i++) {
+        var current_event = this.create_event(this.data.events[i]);
+        console.log(current_event);
+        var last_event = null;
+        var events = [];
+
+        //events.unshift(current_event);
+
+        if (i == 0) {
+          continue;
+        }
+
+        last_event = this.create_event(this.data.events[i-1]);
+        console.log("current_event.visit_id = " + current_event.visit_id);
+        console.log("last_event.visit_id = " + last_event.visit_id);
+
+        while (last_event.visit_id === current_event.visit_id) {
+          events.unshift(current_event);
+          last_event = current_event;
+
+          current_event = this.create_event(this.data.events[i]);
+          console.log(i);
+          i++;
+        }
+
+        console.log(events);
+
+        var state = "";
+        if (events.length < 4) {
+          state = "incomplete";
+        }
+        else if (events.length == 4) {
+          state = "complete";
+        }
+        else if (this.api_data.length === i && this.api_data[i].event_type !== "arrived_at_bed") {
+          state = "in_progress";
+        }
+        else {
+          console.log("More than 4 events in visit");
+        }
+        console.log(state);
+        console.log(events[0].datetime.getTime());
+
+        console.log("duration of visit: " + duration);
+        var duration = events[0].datetime.getTime() - events[events.length-1].datetime.getTime();
+        console.log("duration of visit: " + duration);
+        var duration_date = new Date(duration);
+        console.log("duration of visit: " + duration_date);
+        var duration_minutes = duration_date.getTime() / 1000 / 60;
+        console.log("duration of visit: " + duration_minutes);
+
+        var current_visit = new Visit(
+          state,
+          events[0].visit_id,
+          events[0].date,
+          state,
+          duration_minutes,
+          events
+        );
+
+        this.visits.unshift(current_visit);
+
+        events = [];
+      }
     },
     process_api_data() {
       for (let i = 0; i < this.api_data.length; i++) {
