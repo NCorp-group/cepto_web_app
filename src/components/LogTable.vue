@@ -3,19 +3,26 @@
     <div id="logs">
       <h1>Patient Name</h1>
       <h4>Event Logs</h4>
-      <button class="btn" type="button" @click="process_data">
-        Refresh
+      <button class="btn" type="button" @click="on_refresh">
+        Fetch
       </button>
-      <button class="btn" type="button" @click="print_data">
-        Print visits
+      <button class="btn" type="button" @click="on_log">
+        Log
+      </button>
+      <button class="btn" type="button" @click="process_api_data">
+        Render
       </button>
       <ul id="visit-list">
-        <li v-for="(visit, i) in visits" v-bind:key="i">
+        <li v-for="(visit, i) in visits" :key="i">
           <ul id="visit-header">
-            <li>{{ visit.state }}</li>
+            <li id="indicator" :class="visit.state"></li>
+            <li class="spacer"></li>
             <li>{{ visit.datetime.toLocaleDateString('da-DK') }}</li>
+            <li class="spacer"></li>
             <li>{{ visit.desc }}</li>
-            <li>{{ visit.duration }}</li>
+            <li class="spacer"></li>
+            <li>{{ Math.round((visit.duration + Number.EPSILON) * 1) / 1 }}</li>
+            <li class="spacer"></li>
             <li>{{ visit.events.length }} events logged</li>
           </ul>
           <table id="event-list">
@@ -29,7 +36,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-for="(event, j) in visits[i].events" v-bind:key="j">
+              <tr v-for="(event, j) in visits[i].events" :key="j">
                 <th scope="row">{{ visits[i].events.length - j++ }}</th>
                 <td>{{ event.type }}</td>
                 <td>{{ event.datetime.toLocaleDateString('da-DK') }}</td>
@@ -134,7 +141,7 @@ export default {
   methods: {
     on_log() {
       console.log(this.api_data);
-      this.process_api_data();
+      //this.process_api_data();
     },
     print_data() {
       console.log(this.visits);
@@ -167,6 +174,7 @@ export default {
       return event;
     },
     process_data() {
+      this.visits = [];
       console.log(this.data.events);
       console.log(this.data.events.length);
       for (let i = 0; i < this.data.events.length; i++) {
@@ -235,29 +243,40 @@ export default {
       }
     },
     process_api_data() {
+      this.visits = [];
+
+      console.log(this.api_data);
+      console.log(this.api_data.length);
       for (let i = 0; i < this.api_data.length; i++) {
+        var current_event = this.create_event(this.api_data[i]);
+        console.log(current_event);
         var last_event = null;
-        var events = null;
-        if (last_event == null) {
+        var events = [];
+
+        //events.unshift(current_event);
+
+        if (i == 0) {
           continue;
         }
-        while (last_event.visit_id === current_event.visit_id || i == 0) {
 
-          var current_date = new Date(this.api_data[i].time);
-          var current_since_last = new Date(this.api_data[i].time_since_last);
+        last_event = this.create_event(this.api_data[i-1]);
+        console.log("current_event.visit_id = " + current_event.visit_id);
+        console.log("last_event.visit_id = " + last_event.visit_id);
 
-          var current_event = Event(
-            this.api_data[i].event_type,
-            current_date,
-            current_since_last.getMinutes()
-          );
-
+        while (last_event.visit_id === current_event.visit_id) {
           events.unshift(current_event);
-
+          if (i >= this.api_data.length) {
+            i--;
+            break;
+          }
           last_event = current_event;
 
+          current_event = this.create_event(this.api_data[i]);
+          console.log(i);
           i++;
         }
+
+        console.log(events);
 
         var state = "";
         if (events.length < 4) {
@@ -272,15 +291,21 @@ export default {
         else {
           console.log("More than 4 events in visit");
         }
+        console.log(state);
+        console.log(events[0].datetime.getTime());
 
-        var duration = events[1].datetime.getTime() - events[events.length].datetime.getTime();
+        console.log("duration of visit: " + duration);
+        var duration = events[0].datetime.getTime() - events[events.length-1].datetime.getTime();
+        console.log("duration of visit: " + duration);
         var duration_date = new Date(duration);
+        console.log("duration of visit: " + duration_date);
         var duration_minutes = duration_date.getTime() / 1000 / 60;
+        console.log("duration of visit: " + duration_minutes);
 
         var current_visit = new Visit(
           state,
           events[0].visit_id,
-          events[0].date,
+          events[0].datetime,
           state,
           duration_minutes,
           events
@@ -290,84 +315,6 @@ export default {
 
         events = [];
       }
-
-      /*
-      for (let i = 0; i < this.api_data.length; i++) {
-        // Initialisation
-        var last_event = null;
-        if (i > 0) {
-          last_event = this.api_data[i-1];
-        }
-        var current_event = this.api_data[i];
-
-        // Per visit loop
-        var current_visit = [];
-        while (current_event.visit_id !== last_event.visit_id) {
-          
-        }
-      }
-      */
-      
-      /*
-      // var current_visit_id = 0;
-      for (let i = 0; i < this.api_data.length; i++) {
-        // Initialisation
-        var last_event = null;
-        if (i > 0) {
-          last_event = this.api_data[i-1];
-        }
-        var current_event = this.api_data[i];
-
-        // if (current_event.visit_id !== last_event.visit_id) {
-        //   current_visit_id++;
-        // }
-
-        // Processing
-        var current_event_type = current_event.event_type;
-        //console.log(new_event_type);
-
-        // first timestamp
-        // for absolute date and time
-        var current_date_str = current_event.time;
-        var date_obj = new Date(current_date_str);
-        //console.log("This is the date: " + date_obj.toLocaleDateString('da-DK'));
-
-        var current_date = date_obj.toLocaleDateString('da-DK');
-        //console.log(new_date);
-
-        var current_timestamp = date_obj.toLocaleTimeString('da-DK');
-        //console.log(new_timestamp);
-
-        // second timestamp
-        // for the relative time since last event
-        // ACTUAL CODE var since_last_date_str = current_event.time;
-        // ACTUAL CODE var since_last_date_obj = new Date(since_last_date_str);
-        //console.log("Since last time: " + since_last_date_obj);
-
-        // compute time since last event.
-        
-        // last timestamp
-        // for relative time later
-        
-        var current_time_since_last_event = "-";
-        if (i > 0) {
-          var last_date_obj = new Date(last_event.time);
-          //console.log(last_date_obj.getMinutes());
-          // ACTUAL CODE
-          // new_time_since_last_event = date_obj.getMinutes() - last_date_obj.getMinutes();
-          //TEST CODE
-          current_time_since_last_event = last_date_obj.getMinutes();
-        }
-        //console.log(new_time_since_last_event);
-
-        this.events.unshift({
-          event_type: current_event_type,
-          date: current_date,
-          timestamp: current_timestamp,
-          time_since_last_event: current_time_since_last_event
-        });
-      }
-      */
     }
   },
   mounted() {
@@ -381,14 +328,13 @@ export default {
   flex-grow: 5;
 }
 #logs {
-  /* height: 100%; */
   padding: 0px 200px;
   width: 100%;
   text-align: left;
   color: #F6F6F6;
-  /* position: absolute; */
-  /* margin-left: 200px; */
 }
+
+/* VISIT COMPONENTS */
 #visit-list, #event-list {
   list-style: none;
   padding: 0;
@@ -408,13 +354,41 @@ export default {
   padding: 20px;
   display: flex;
   flex-direction: row;
+  font-size: 22px;
 }
 #visit-header li {
   list-style-type: none;
-  margin: 0 5px;
+  margin: 0 30px 0 0;
 }
+.spacer {
+  background-color: #707070;
+  height: 28px;
+  width: 2px;
+}
+#indicator {
+  min-width: 26px;
+  min-height: 26px;
+  max-width: 26px;
+  max-height: 26px;
+  border-radius: 50%;
+  background-color: #00CEF9;
+  border: 2px solid #00CEF9;
+}
+.complete {
+  background-color: #19F900;
+  border: 2px solid #19F900;
+}
+.incomplete {
+  background-color: #F90000;
+  border: 2px solid #F90000;
+}
+.in_progress {
+  background-color: #00CEF9;
+  border: 2px solid #00CEF9;
+}
+
+/* EVENT LIST */
 #event-list {
-  /* padding: 5px 20px 20px 20px; */
   padding: 20px 15px;
 }
 #event-list tr {
