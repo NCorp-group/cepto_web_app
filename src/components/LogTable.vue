@@ -11,9 +11,13 @@
       </button>
       <ul id="visit-list">
         <li v-for="(visit, i) in visits" v-bind:key="i">
-          <div id="visit-header">
-            {{ visit.id }}
-          </div>
+          <ul id="visit-header">
+            <li>{{ visit.state }}</li>
+            <li>{{ visit.datetime.toLocaleDateString('da-DK') }}</li>
+            <li>{{ visit.desc }}</li>
+            <li>{{ visit.duration }}</li>
+            <li>{{ visit.events.length }} events logged</li>
+          </ul>
           <table id="event-list">
             <thead>
               <tr>
@@ -36,32 +40,6 @@
           </table>
         </li>
       </ul>
-      <!-- <table class="table mt-5">
-        <thead>
-          <tr>
-            <th scope="col">VisitID</th>
-            <th scope="col">EventID</th>
-            <th scope="col">Event Type</th>
-            <th scope="col">Date</th>
-            <th scope="col">Timestamp</th>
-            <th scope="col">Time since last event</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="(visit, i) in visits" :key="i">
-            <th scope="row">{{ visits.length - i++ }}</th>
-            <tbody>
-              <tr v-for="(event, j) in visits[i].events" :key="j">
-                <th scope="row">{{ visits[i].events.length - i++ }}</th>
-                <td>{{ event.type }}</td>
-                <td>{{ event.datetime.toLocaleDateString('da-DK') }}</td>
-                <td>{{ event.datetime.toLocaleDateString('da-DK') }}</td>
-                <td>{{ event.time_since_last }}</td>
-              </tr>
-            </tbody>
-          </tr>
-        </tbody>
-      </table>  -->
     </div>
   </div>
 </template>
@@ -245,7 +223,7 @@ export default {
         var current_visit = new Visit(
           state,
           events[0].visit_id,
-          events[0].date,
+          events[0].datetime,
           state,
           duration_minutes,
           events
@@ -422,25 +400,30 @@ export default {
   overflow: hidden;
   margin: 20px 0;
 }
-#visit-list > li > div {
+#visit-header {
   width: 100%;
   box-sizing: border-box;
-  padding: 20px;
-}
-#visit-header {
   background-color: #2F2F2F;
   border-radius: 10px;
+  padding: 20px;
+  display: flex;
+  flex-direction: row;
+}
+#visit-header li {
+  list-style-type: none;
+  margin: 0 5px;
 }
 #event-list {
-  padding: 5px 20px 20px 20px;
+  /* padding: 5px 20px 20px 20px; */
+  padding: 20px 15px;
 }
-#event-list > tbody > tr {
+#event-list tr {
   padding: 5px 0 0 0;
+}
+#event-list td, #event-list th {
+  padding: 0 10px;
 }
 button {
   margin: 30px 10px 20px 0px;
 }
-/* table > td {
-  padding: 5px;
-} */
 </style>
