@@ -59,7 +59,6 @@ export default {
       this.$accounts.forEach(account => {
         if (this.input.username === account.username &&
             this.input.password === account.password) {
-          console.log("true");
           is_match = true;
         }
       });

@@ -21,7 +21,8 @@ app.config.globalProperties.$accounts = [
 ]
 
 app.config.globalProperties.$http = {
-    ip: "10.9.0.221",
+    ip: "10.9.2.59",
+    port: "5000",
     command: "fecth-events"
 }
 

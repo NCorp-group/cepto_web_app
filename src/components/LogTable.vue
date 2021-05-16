@@ -66,7 +66,7 @@ export default {
   data: () => ({ visits: [], api_data: null }),
   methods: {
     on_log() {
-      console.log(this.visits);
+      console.log(this.api_data);
     },
     on_refresh() {
       //this.clear_logs();
@@ -78,9 +78,8 @@ export default {
     },
     fetch_logs() {
       this.$http.command = "fetch-events";
-      axios.get("http://" + this.$http.ip + "/" + this.$http.command + "/" + this.$user.username + "," + this.$user.password)
+      axios.get("http://" + this.$http.ip + ":" + this.$http.port + "/" + this.$http.command + "/" + this.$user.username + "," + this.$user.password)
         .then(response => this.api_data = response.data.events)
-        .then(this.process_api_data)
         .catch(error => console.log(error));
     },
     process_api_data() {
@@ -222,9 +221,8 @@ export default {
     }
   },
   mounted() {
-    this.fetch_logs();
-    //this.process_api_data();
-  },
+    setInterval(this.fetch_logs(), 5000);
+  }
 };
 </script>
 
