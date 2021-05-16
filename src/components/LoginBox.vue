@@ -49,7 +49,7 @@ export default {
       }
       else {
         this.feedback.color = "red";
-        this.feedback.text = "Wrong Credentials";
+        this.feedback.text = "Wrong credentials";
         
         console.log(this.feedback.text);
       }
