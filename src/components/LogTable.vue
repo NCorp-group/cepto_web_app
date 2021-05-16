@@ -10,12 +10,30 @@
         Print visits
       </button>
       <ul id="visit-list">
-        <li v-for="visit in visits" v-bind:key="visit">
+        <li v-for="(visit, i) in visits" v-bind:key="i">
           <div id="visit-header">
             {{ visit.id }}
           </div>
-          <div id="visit-events">
-          </div>
+          <table id="event-list">
+            <thead>
+              <tr>
+                <th scope="col">EventID</th>
+                <th scope="col">Description</th>
+                <th scope="col">Date</th>
+                <th scope="col">Timestamp</th>
+                <th scope="col">Time since last event</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(event, j) in visits[i].events" v-bind:key="j">
+                <th scope="row">{{ visits[i].events.length - j++ }}</th>
+                <td>{{ event.type }}</td>
+                <td>{{ event.datetime.toLocaleDateString('da-DK') }}</td>
+                <td>{{ event.datetime.toLocaleTimeString('da-DK') }}</td>
+                <td>{{ event.time_since_last }}</td>
+              </tr>
+            </tbody>
+          </table>
         </li>
       </ul>
       <!-- <table class="table mt-5">
@@ -53,9 +71,9 @@ import axios from 'axios'
 //import json_data from "../assets/test_logs.js"
 
 class Visit {
-  constructor(state, visit_id, datetime, desc, duration, events) {
+  constructor(state, id, datetime, desc, duration, events) {
       this.state = state;
-      this.visit_id = visit_id;
+      this.id = id;
       this.datetime = datetime;
       this.desc = desc;
       this.duration = duration;
@@ -393,11 +411,11 @@ export default {
   /* position: absolute; */
   /* margin-left: 200px; */
 }
-#visit-list {
+#visit-list, #event-list {
   list-style: none;
   padding: 0;
 }
-#visit-list li {
+#visit-list > li {
   background-color: #272727;
   border-radius: 10px;
   box-shadow: 0 3px 6px #191919;
@@ -412,6 +430,12 @@ export default {
 #visit-header {
   background-color: #2F2F2F;
   border-radius: 10px;
+}
+#event-list {
+  padding: 5px 20px 20px 20px;
+}
+#event-list > tbody > tr {
+  padding: 5px 0 0 0;
 }
 button {
   margin: 30px 10px 20px 0px;
