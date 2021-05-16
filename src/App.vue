@@ -33,10 +33,10 @@
   font-size: 16px;
   margin: 10px 0;
   border-radius: 10px;
-  background: linear-gradient(200deg, rgba(67, 178, 228, 0), rgba(67, 178, 228, 0.8) 100%),
-              linear-gradient(20deg, rgba(34, 43, 98, 0), rgba(34, 43, 98, 0.7) 70%),
-              linear-gradient(120deg, rgba(67, 178, 228, 0), rgba(67, 178, 228, 1)),
-              linear-gradient(320deg, rgba(34, 43, 98, 0), rgba(34, 43, 98, 1));
+  background: linear-gradient(20deg, rgba(67, 178, 228, 0), rgba(67, 178, 228, 0.8) 100%),
+              linear-gradient(200deg, rgba(34, 43, 98, 0), rgba(34, 43, 98, 0.7) 70%),
+              linear-gradient(300deg, rgba(67, 178, 228, 0), rgba(67, 178, 228, 1)),
+              linear-gradient(140deg, rgba(34, 43, 98, 0), rgba(34, 43, 98, 1));
   box-shadow: 0 3px 6px #191919;
   transition: ease-in-out 100ms;
 }
