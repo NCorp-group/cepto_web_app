@@ -21,6 +21,7 @@ export default {
 #sidepanel {
   position: relative;
   flex-grow: 1;
+  max-width: 250px;
   background-color: #2F2F2F;
   box-shadow: 0px 0px 8px 0px black;
   padding: 30px;

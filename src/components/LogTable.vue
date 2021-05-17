@@ -337,14 +337,19 @@ export default {
   flex-grow: 5;
 }
 #logs {
-  padding: 0px 200px;
-  width: 100%;
+  /* padding: 0px 200px; */
+  width: 800px;
   text-align: left;
   color: #F6F6F6;
 }
 
 /* VISIT COMPONENTS */
-#visit-list, #event-list {
+#visit-list {
+  list-style: none;
+  max-width: 800px;
+  padding: 0;
+}
+#event-list {
   list-style: none;
   padding: 0;
 }
@@ -383,6 +388,18 @@ export default {
   background-color: #00CEF9;
   border: 2px solid #00CEF9;
 }
+.in_progress.complete {
+  background-color: transparent !important;
+  border: 2px solid #19F900 !important;
+}
+.in_progress.incomplete {
+  background-color: transparent !important;
+  border: 2px solid #00CEF9 !important;
+}
+.in_progress.failed {
+  background-color: transparent !important;
+  border: 2px solid #F90000 !important;
+}
 .complete {
   background-color: #19F900 !important;
   border: 2px solid #19F900 !important;
@@ -391,8 +408,9 @@ export default {
   background-color: #00CEF9 !important;
   border: 2px solid #00CEF9 !important;
 }
-.in_progress {
-  background-color: transparent !important;
+.failed {
+  background-color: #F90000 !important;
+  border: 2px solid #F90000 !important;
 }
 
 /* EVENT LIST */
