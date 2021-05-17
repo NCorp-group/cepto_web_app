@@ -10,7 +10,10 @@
         Log
       </button>
       <button class="btn" type="button" @click="process_api_data">
-        Render
+        Render API data
+      </button>
+      <button class="btn" type="button" @click="process_data">
+        Render test data
       </button>
       <button class="btn" type="button" @click="print_data">
         Log visits
@@ -20,7 +23,7 @@
           <ul id="visit-header">
             <li id="indicator" :class="visit.state"></li>
             <li class="spacer"></li>
-            <li>{{ visit.datetime.toLocaleDateString('da-DK') }}</li>
+            <li>{{ visit.timestamp.toLocaleDateString('da-DK') }}</li>
             <li class="spacer"></li>
             <li>{{ visit.desc }}</li>
             <li class="spacer"></li>
@@ -42,8 +45,8 @@
               <tr v-for="(event, j) in visits[i].events" :key="j">
                 <th scope="row">{{ visits[i].events.length - j++ }}</th>
                 <td>{{ event.type }}</td>
-                <td>{{ event.datetime.toLocaleDateString('da-DK') }}</td>
-                <td>{{ event.datetime.toLocaleTimeString('da-DK') }}</td>
+                <td>{{ event.timestamp.toLocaleDateString('da-DK') }}</td>
+                <td>{{ event.timestamp.toLocaleTimeString('da-DK') }}</td>
                 <td>{{ event.time_since_last }}</td>
               </tr>
             </tbody>
@@ -59,10 +62,10 @@ import axios from 'axios'
 //import json_data from "../assets/test_logs.js"
 
 class Visit {
-  constructor(state, id, datetime, desc, duration, events) {
+  constructor(state, id, timestamp, desc, duration, events) {
       this.state = state;
       this.id = id;
-      this.datetime = datetime;
+      this.timestamp = timestamp;
       this.desc = desc;
       this.duration = duration;
       this.events = events;
@@ -70,10 +73,10 @@ class Visit {
 }
 
 class Event {
-  constructor(visit_id, type, datetime, time_since_last) {
+  constructor(visit_id, type, timestamp, time_since_last) {
       this.visit_id = visit_id;
       this.type = type;
-      this.datetime = datetime;
+      this.timestamp = timestamp;
       this.time_since_last = time_since_last;
   }
 }
@@ -85,57 +88,71 @@ export default {
         {
             "event_type": "left_bed",
             "patient_full_name": "test_patient",
-            "patient_id": 2,
+            "patient_id": 1,
             "timestamp": "2021-05-12T15:45:10.000000",
             "visit_id": 1
         },
         {
-            "event_type": "left_bed",
+            "event_type": "arrived_at_bathroom",
             "patient_full_name": "test_patient",
-            "patient_id": 3,
-            "timestamp": "2021-05-12T15:45:12.000000",
+            "patient_id": 1,
+            "timestamp": "2021-05-12T15:45:36.000000",
             "visit_id": 1
         },
         {
-            "event_type": "left_bed",
+            "event_type": "left_bathroom",
             "patient_full_name": "test_patient",
-            "patient_id": 4,
-            "timestamp": "2021-05-12T15:45:26.000000",
+            "patient_id": 1,
+            "timestamp": "2021-05-12T15:48:26.000000",
             "visit_id": 1
-        },
-        {
-            "event_type": "left_bed",
-            "patient_full_name": "test_patient",
-            "patient_id": 5,
-            "timestamp": "2021-05-12T15:45:27.000000",
-            "visit_id": 2
         },
         {
             "event_type": "arrived_at_bed",
             "patient_full_name": "test_patient",
-            "patient_id": 5,
+            "patient_id": 1,
+            "timestamp": "2021-05-12T15:49:01.000000",
+            "visit_id": 1
+        },
+        {
+            "event_type": "left_bed",
+            "patient_full_name": "test_patient",
+            "patient_id": 1,
             "timestamp": "2021-05-16T08:51:03.000000",
             "visit_id": 2
         },
         {
-            "event_type": "arrived_at_bathroom",
+            "event_type": "arrived_at_bed",
             "patient_full_name": "test_patient",
-            "patient_id": 5,
-            "timestamp": "2021-05-16T08:51:58.000000",
+            "patient_id": 1,
+            "timestamp": "2021-05-16T08:56:58.000000",
             "visit_id": 2
         },
         {
-            "event_type": "arrived_at_bed",
+            "event_type": "left_bed",
             "patient_full_name": "test_patient",
-            "patient_id": 5,
-            "timestamp": "2021-05-16T08:52:54.000000",
+            "patient_id": 1,
+            "timestamp": "2021-05-16T23:52:54.000000",
+            "visit_id": 3
+        },
+        {
+            "event_type": "arrived_at_bathroom",
+            "patient_full_name": "test_patient",
+            "patient_id": 1,
+            "timestamp": "2021-05-16T23:53:13.000000",
             "visit_id": 3
         },
         {
             "event_type": "left_bathroom",
             "patient_full_name": "test_patient",
-            "patient_id": 5,
-            "timestamp": "2021-05-16T08:53:13.000000",
+            "patient_id": 1,
+            "timestamp": "2021-05-17T00:04:45.000000",
+            "visit_id": 3
+        },
+        {
+            "event_type": "arrived_at_bed",
+            "patient_full_name": "test_patient",
+            "patient_id": 1,
+            "timestamp": "2021-05-16T00:05:56.000000",
             "visit_id": 3
         }
     ],
@@ -176,119 +193,109 @@ export default {
 
       return event;
     },
+    create_visit(events, state) {
+      console.log(events);
+
+      let duration = events[0].timestamp.getTime() - events[0].timestamp.getTime();
+      let duration_date = new Date(duration);
+      let duration_minutes = duration_date.getTime() / 1000 / 60;
+
+      console.log("MINUTES: " + duration_minutes);
+
+      let visit = new Visit(
+        state,
+        events[0].visit_id,
+        events[0].timestamp,
+        state,
+        duration_minutes,
+        events
+      );
+
+      console.log(visit);
+
+      return visit
+    },
+    map_adjacent(mapping, array) {
+      const {length} = array, size = length, result = new Array(size);
+      for (let i = 0; i < size; i++) result[i] = mapping(array[i-1], array[i]);
+      return result;
+    },
     process_data() {
       this.visits = [];
-      console.log(this.data.events);
-      console.log(this.data.events.length);
-      for (let i = 0; i < this.data.events.length; i++) {
-        var current_event = this.create_event(this.data.events[i]);
-        console.log(current_event);
-        var last_event = null;
+
+      if (this.data.events == null) {
+        console.log("No data to show yet.");
+        return;
+      }
+
+      var visit_ids = this.data.events.map(function(event) { return event.visit_id});
+      var visit_id_set = new Set(visit_ids);
+
+      visit_id_set.forEach(visit_id => {
+        // ADJACENT MAP to refer to last element
+        // var events = [];
+        // events = this.map_adjacent((event1, event2) => {
+        //   let duration;
+        //   if (event1 == null) {
+        //     duration = "-";
+        //   }
+        //   else {
+        //     var date1 = new Date(event1.timestamp);
+        //     let date2 = new Date(event2.timestamp);
+        //     duration = (date2.getTime() - date1.getTime()) / 1000 / 60;
+        //   }
+        //   return new Event(
+        //     visit_id,
+        //     event2.event_type,
+        //     date1,
+        //     duration
+        //   );
+        // }, this.data.events.filter(event => event.visit_id === visit_id))
+        // console.log(events);
+        
+
         var events = [];
+        events = this.data.events.filter(event => event.visit_id === visit_id).map(
+          event => {
+            let new_event = this.create_event(event);
+            return new_event;
+          }
+        ).reverse();
 
-        //events.unshift(current_event);
-
-        if (i == 0) {
-          continue;
-        }
-
-        last_event = this.create_event(this.data.events[i-1]);
-        console.log("current_event.visit_id = " + current_event.visit_id);
-        console.log("last_event.visit_id = " + last_event.visit_id);
-
-        while (last_event.visit_id === current_event.visit_id) {
-          events.unshift(current_event);
-          last_event = current_event;
-
-          current_event = this.create_event(this.data.events[i]);
-          console.log(i);
-          i++;
-        }
-
-        console.log(events);
-
+        // resolve state
         var state = "";
-        if (events.length < 4) {
+        if (events[events.length-1].event_type !== "arrived_at_bed") {
+          state = "in_progress";
+        }
+        else if (events.length < 4) {
           state = "incomplete";
         }
         else if (events.length == 4) {
           state = "complete";
         }
-        else if (this.api_data.length === i && this.api_data[i].event_type !== "arrived_at_bed") {
-          state = "in_progress";
-        }
-        else {
-          console.log("More than 4 events in visit");
-        }
-        console.log(state);
-        console.log(events[0].datetime.getTime());
 
-        console.log("duration of visit: " + duration);
-        var duration = events[0].datetime.getTime() - events[events.length-1].datetime.getTime();
-        console.log("duration of visit: " + duration);
-        var duration_date = new Date(duration);
-        console.log("duration of visit: " + duration_date);
-        var duration_minutes = duration_date.getTime() / 1000 / 60;
-        console.log("duration of visit: " + duration_minutes);
-
-        var current_visit = new Visit(
-          state,
-          events[0].visit_id,
-          events[0].datetime,
-          state,
-          duration_minutes,
-          events
-        );
-
-        this.visits.unshift(current_visit);
-
-        events = [];
-      }
-    },
-    create_visit(events, state) {
-      var new_state = state;
-      // console.log(state);
-      // console.log(events[0].datetime.getTime());
-
-      // console.log("duration of visit: " + duration);
-      var duration = events[0].datetime.getTime() - events[events.length-1].datetime.getTime();
-      // console.log("duration of visit: " + duration);
-      var duration_date = new Date(duration);
-      // console.log("duration of visit: " + duration_date);
-      var duration_minutes = duration_date.getTime() / 1000 / 60;
-      // console.log("duration of visit: " + duration_minutes);
-
-      var visit = new Visit(
-        new_state,
-        events[0].visit_id,
-        events[0].datetime,
-        new_state,
-        duration_minutes,
-        events
-      );
-
-      return visit
+        this.visits.unshift(this.create_visit(events, state));
+        console.log(this.visits);
+      });
     },
     process_api_data() {
+      if (this.api_data == null) {
+        console.log("No data to show yet.");
+        return;
+      }
+
       var visit_ids = this.api_data.map(function(event) { return event.visit_id});
       var visit_id_set = new Set(visit_ids);
-      console.log(visit_id_set);
 
-      // var visits = [];
       visit_id_set.forEach(visit_id => {
         var events = [];
         events = this.api_data.filter(event => event.visit_id === visit_id).map(
           event => {
-            console.log(event);
-            let { event_type, timestamp } = event;
-            // console.log(vid + event_type + timestamp + duration);
-            console.log(visit_id + event_type + timestamp);
             let new_event = this.create_event(event);
-            console.log(new_event);
             return new_event;
           }
         ).reverse();
-        console.log(events);
+        
         // resolve state
         var state = "";
         if (events[events.length-1].event_type !== "arrived_at_bed") {
@@ -303,55 +310,6 @@ export default {
 
         this.visits.unshift(this.create_visit(events, state));
       });
-
-      // this.visits = [];
-      // var events = [];
-      // var last_event = null;
-      // var current_visit = null;
-
-      // // console.log(this.api_data);
-      // // console.log(this.api_data.length);
-      // let i = 0;
-      //  while (i < this.api_data.length) {
-      //   var current_event = this.create_event(this.api_data[i]);
-
-      //   // console.log(current_event);
-
-      //   // events.unshift(current_event);
-
-      //   if (last_event == null) {
-      //     events.unshift(current_event);
-      //     i++;
-
-      //     last_event = current_event;
-      //     // current_visit = this.create_visit(events, i);
-      //   }
-      //   else {
-      //     // last_event = this.create_event(this.api_data[i-1]);
-      //     // console.log("current_event.visit_id = " + current_event.visit_id);
-      //     // console.log("last_event.visit_id = " + last_event.visit_id);
-
-      //     while (last_event.visit_id === current_event.visit_id && i < this.api_data.length) {
-      //       events.unshift(current_event);
-      //       // if (i >= this.api_data.length) {
-      //       //   i--;
-      //       //   break;
-      //       // }
-      //       last_event = current_event;
-
-      //       current_event = this.create_event(this.api_data[i]);
-      //       // console.log(i);
-      //       i++;
-      //     }
-
-      //     // console.log(events, i);
-
-      //     current_visit = this.create_visit(events);
-
-      //     this.visits.unshift(current_visit);
-      //     events = [];
-      //   }
-      // }
     }
   },
   mounted() {
