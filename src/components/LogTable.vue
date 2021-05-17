@@ -210,24 +210,39 @@ export default {
 
       return event;
     },
-    create_visit(events, state) {
-      console.log(events[0]);
+    create_visit(events) {
+      // console.log(events[0]);
       let duration = events[0].timestamp.getTime() - events[0].timestamp.getTime();
       let duration_date = new Date(duration);
       let duration_minutes = duration_date.getTime() / 1000 / 60;
 
-      console.log("MINUTES: " + duration_minutes);
+      // console.log("MINUTES: " + duration_minutes);
+      let state = "";
+      let desc = "";
+      console.log(events[events.length-1]);
+      if (events[0].type !== "arrived_at_bed") {
+        state = "in_progress";
+        desc = "In progress";
+      }
+      else if (events.length < 4) {
+        state = "incomplete";
+        desc = "Returned to bed";
+      }
+      else if (events.length == 4) {
+        state = "complete";
+        desc = "Successful visit"
+      }
 
       let visit = new Visit(
         state,
         events[0].visit_id,
         events[0].timestamp,
-        snake_to_title_case(state),
+        desc,
         duration_minutes,
         events
       );
 
-      console.log(visit);
+      // console.log(visit);
 
       return visit
     },
@@ -239,14 +254,17 @@ export default {
         return;
       }
 
-      var visit_ids = this.data.events.map(function(event) { return event.visit_id});
-      var visit_id_set = new Set(visit_ids);
+      // Extract visit ids from all events
+      let visit_ids = this.data.events.map(function(event) { return event.visit_id });
+      // Create set of the visit ids
+      let visit_id_set = new Set(visit_ids);
 
+      // For each visit id create a visit to log
       visit_id_set.forEach(visit_id => {
         let events_of_visit_id = this.data.events.filter(event => event.visit_id === visit_id);
 
         // ADJACENT MAP to refer to last element
-        var events = map_adjacent((event1, event2) => {
+        let events = map_adjacent((event1, event2) => {
 
           let date2 = new Date(event2.timestamp);
           
@@ -261,6 +279,7 @@ export default {
             let seconds = Math.floor(diff/1000 - minutes * 60);
             duration += minutes + " min " + seconds + " sec";
           }
+
           let new_event = new Event(
             visit_id,
             event2.event_type,
@@ -268,34 +287,15 @@ export default {
             date2,
             duration
           );
-          console.log(new_event);
+          // console.log(new_event);
           return new_event;
         }, events_of_visit_id).reverse();
-        console.log(events);
-
-
-        // var events = [];
-        // events = this.data.events.filter(event => event.visit_id === visit_id).map(
-        //   event => {
-        //     let new_event = this.create_event(event);
-        //     return new_event;
-        //   }
-        // ).reverse();
+        // console.log(events);
 
         // resolve state
-        var state = "";
-        if (events[events.length-1].event_type !== "arrived_at_bed") {
-          state = "in_progress";
-        }
-        else if (events.length < 4) {
-          state = "incomplete";
-        }
-        else if (events.length == 4) {
-          state = "complete";
-        }
 
-        this.visits.unshift(this.create_visit(events, state));
-        console.log(this.visits);
+        this.visits.unshift(this.create_visit(events));
+        // console.log(this.visits);
       });
     },
     process_api_data() {
@@ -373,7 +373,7 @@ export default {
 }
 #visit-header li {
   list-style-type: none;
-  margin: 0 30px 0 0;
+  margin: 0 20px 0 0;
 }
 .spacer {
   background-color: #707070;
