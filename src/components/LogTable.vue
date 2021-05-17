@@ -375,25 +375,24 @@ export default {
   width: 2px;
 }
 #indicator {
-  min-width: 26px;
-  min-height: 26px;
-  max-width: 26px;
-  max-height: 26px;
+  min-width: 24px;
+  min-height: 24px;
+  max-width: 24px;
+  max-height: 24px;
   border-radius: 50%;
   background-color: #00CEF9;
   border: 2px solid #00CEF9;
 }
 .complete {
-  background-color: #19F900;
-  border: 2px solid #19F900;
+  background-color: #19F900 !important;
+  border: 2px solid #19F900 !important;
 }
 .incomplete {
-  background-color: #F90000;
-  border: 2px solid #F90000;
+  background-color: #00CEF9 !important;
+  border: 2px solid #00CEF9 !important;
 }
 .in_progress {
-  background-color: #00CEF9;
-  border: 2px solid #00CEF9;
+  background-color: transparent !important;
 }
 
 /* EVENT LIST */
