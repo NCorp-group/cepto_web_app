@@ -38,7 +38,7 @@
                 <th scope="col">Description</th>
                 <th scope="col">Date</th>
                 <th scope="col">Timestamp</th>
-                <th scope="col">Time since last event</th>
+                <th scope="col">Minutes since last event</th>
               </tr>
             </thead>
             <tbody>
@@ -47,7 +47,7 @@
                 <td>{{ event.type }}</td>
                 <td>{{ event.timestamp.toLocaleDateString('da-DK') }}</td>
                 <td>{{ event.timestamp.toLocaleTimeString('da-DK') }}</td>
-                <td>{{ event.time_since_last }}</td>
+                <td>{{ Math.round((event.time_since_last + Number.EPSILON) * 1) / 1 }}</td>
               </tr>
             </tbody>
           </table>
@@ -79,6 +79,12 @@ class Event {
       this.timestamp = timestamp;
       this.time_since_last = time_since_last;
   }
+}
+
+const map_adjacent = (mapping, array) => {
+  const {length} = array, size = length, result = new Array(size);
+  for (let i = 0; i < size; i++) result[i] = mapping(array[i-1], array[i]);
+  return result;
 }
 
 export default {
@@ -152,7 +158,7 @@ export default {
             "event_type": "arrived_at_bed",
             "patient_full_name": "test_patient",
             "patient_id": 1,
-            "timestamp": "2021-05-16T00:05:56.000000",
+            "timestamp": "2021-05-17T00:05:56.000000",
             "visit_id": 3
         }
     ],
@@ -194,8 +200,7 @@ export default {
       return event;
     },
     create_visit(events, state) {
-      console.log(events);
-
+      console.log(events[0]);
       let duration = events[0].timestamp.getTime() - events[0].timestamp.getTime();
       let duration_date = new Date(duration);
       let duration_minutes = duration_date.getTime() / 1000 / 60;
@@ -215,11 +220,6 @@ export default {
 
       return visit
     },
-    map_adjacent(mapping, array) {
-      const {length} = array, size = length, result = new Array(size);
-      for (let i = 0; i < size; i++) result[i] = mapping(array[i-1], array[i]);
-      return result;
-    },
     process_data() {
       this.visits = [];
 
@@ -232,35 +232,40 @@ export default {
       var visit_id_set = new Set(visit_ids);
 
       visit_id_set.forEach(visit_id => {
-        // ADJACENT MAP to refer to last element
-        // var events = [];
-        // events = this.map_adjacent((event1, event2) => {
-        //   let duration;
-        //   if (event1 == null) {
-        //     duration = "-";
-        //   }
-        //   else {
-        //     var date1 = new Date(event1.timestamp);
-        //     let date2 = new Date(event2.timestamp);
-        //     duration = (date2.getTime() - date1.getTime()) / 1000 / 60;
-        //   }
-        //   return new Event(
-        //     visit_id,
-        //     event2.event_type,
-        //     date1,
-        //     duration
-        //   );
-        // }, this.data.events.filter(event => event.visit_id === visit_id))
-        // console.log(events);
-        
+        let events_of_visit_id = this.data.events.filter(event => event.visit_id === visit_id);
 
-        var events = [];
-        events = this.data.events.filter(event => event.visit_id === visit_id).map(
-          event => {
-            let new_event = this.create_event(event);
-            return new_event;
+        // ADJACENT MAP to refer to last element
+        var events = map_adjacent((event1, event2) => {
+
+          let date2 = new Date(event2.timestamp);
+          
+          let duration;
+          if (event1 == null) {
+            duration = "-";
           }
-        ).reverse();
+          else {
+            let date1 = new Date(event1.timestamp);
+            duration = (date2.getTime() - date1.getTime()) / 1000 / 60;
+          }
+          let new_event = new Event(
+            visit_id,
+            event2.event_type,
+            date2,
+            duration
+          );
+          console.log(new_event);
+          return new_event;
+        }, events_of_visit_id)
+        console.log(events);
+
+
+        // var events = [];
+        // events = this.data.events.filter(event => event.visit_id === visit_id).map(
+        //   event => {
+        //     let new_event = this.create_event(event);
+        //     return new_event;
+        //   }
+        // ).reverse();
 
         // resolve state
         var state = "";
@@ -295,7 +300,7 @@ export default {
             return new_event;
           }
         ).reverse();
-        
+
         // resolve state
         var state = "";
         if (events[events.length-1].event_type !== "arrived_at_bed") {
