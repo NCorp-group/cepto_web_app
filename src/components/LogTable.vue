@@ -44,10 +44,10 @@
             <tbody>
               <tr v-for="(event, j) in visits[i].events" :key="j">
                 <th scope="row">{{ visits[i].events.length - j++ }}</th>
-                <td>{{ event.type }}</td>
+                <td>{{ event.desc }}</td>
                 <td>{{ event.timestamp.toLocaleDateString('da-DK') }}</td>
                 <td>{{ event.timestamp.toLocaleTimeString('da-DK') }}</td>
-                <td>{{ Math.round((event.time_since_last + Number.EPSILON) * 1) / 1 }}</td>
+                <td>{{ event.time_since_last }}</td>
               </tr>
             </tbody>
           </table>
@@ -59,7 +59,6 @@
 
 <script>
 import axios from 'axios'
-//import json_data from "../assets/test_logs.js"
 
 class Visit {
   constructor(state, id, timestamp, desc, duration, events) {
@@ -73,9 +72,10 @@ class Visit {
 }
 
 class Event {
-  constructor(visit_id, type, timestamp, time_since_last) {
+  constructor(visit_id, type, desc, timestamp, time_since_last) {
       this.visit_id = visit_id;
       this.type = type;
+      this.desc = desc;
       this.timestamp = timestamp;
       this.time_since_last = time_since_last;
   }
@@ -85,6 +85,17 @@ const map_adjacent = (mapping, array) => {
   const {length} = array, size = length, result = new Array(size);
   for (let i = 0; i < size; i++) result[i] = mapping(array[i-1], array[i]);
   return result;
+}
+
+// Snake case to title case
+// https://www.codegrepper.com/code-examples/javascript/snake+case+to+title+case+javascript
+function snake_to_title_case(string) {
+  let sentence = string.toLowerCase().split("_");
+  for (let i = 0; i < sentence.length; i++) {
+    sentence[i] = sentence[i][0].toUpperCase() + sentence[i].slice(1);
+  }
+  
+  return sentence.join(" ");
 }
 
 export default {
@@ -211,7 +222,7 @@ export default {
         state,
         events[0].visit_id,
         events[0].timestamp,
-        state,
+        snake_to_title_case(state),
         duration_minutes,
         events
       );
@@ -239,23 +250,27 @@ export default {
 
           let date2 = new Date(event2.timestamp);
           
-          let duration;
+          let duration = "";
           if (event1 == null) {
             duration = "-";
           }
           else {
             let date1 = new Date(event1.timestamp);
-            duration = (date2.getTime() - date1.getTime()) / 1000 / 60;
+            let diff = date2.getTime() - date1.getTime();
+            let minutes = Math.floor(diff / 1000 / 60);
+            let seconds = Math.floor(diff/1000 - minutes * 60);
+            duration += minutes + " min " + seconds + " sec";
           }
           let new_event = new Event(
             visit_id,
             event2.event_type,
+            snake_to_title_case(event2.event_type),
             date2,
             duration
           );
           console.log(new_event);
           return new_event;
-        }, events_of_visit_id)
+        }, events_of_visit_id).reverse();
         console.log(events);
 
 
