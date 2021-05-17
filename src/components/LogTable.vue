@@ -27,7 +27,7 @@
             <li class="spacer"></li>
             <li>{{ visit.desc }}</li>
             <li class="spacer"></li>
-            <li>{{ Math.round((visit.duration + Number.EPSILON) * 1) / 1 }} minutes</li>
+            <li>{{ visit.duration }}</li>
             <li class="spacer"></li>
             <li>{{ visit.events.length }} events logged</li>
           </ul>
@@ -211,15 +211,16 @@ export default {
       return event;
     },
     create_visit(events) {
-      // console.log(events[0]);
-      let duration = events[0].timestamp.getTime() - events[0].timestamp.getTime();
-      let duration_date = new Date(duration);
-      let duration_minutes = duration_date.getTime() / 1000 / 60;
+      let diff = events[0].timestamp.getTime() - events[events.length-1].timestamp.getTime();
 
-      // console.log("MINUTES: " + duration_minutes);
+      let minutes = Math.floor(diff/1000/60);
+      let seconds = Math.floor(diff/1000 - minutes*60);
+      let duration = minutes + " min " + seconds + " sec"
+
+      // Reseolve visitstate and description
       let state = "";
       let desc = "";
-      console.log(events[events.length-1]);
+      // console.log(events[events.length-1]);
       if (events[0].type !== "arrived_at_bed") {
         state = "in_progress";
         desc = "In progress";
@@ -238,11 +239,9 @@ export default {
         events[0].visit_id,
         events[0].timestamp,
         desc,
-        duration_minutes,
+        duration,
         events
       );
-
-      // console.log(visit);
 
       return visit
     },
@@ -275,24 +274,19 @@ export default {
           else {
             let date1 = new Date(event1.timestamp);
             let diff = date2.getTime() - date1.getTime();
-            let minutes = Math.floor(diff / 1000 / 60);
+            let minutes = Math.floor(diff/1000/60);
             let seconds = Math.floor(diff/1000 - minutes * 60);
             duration += minutes + " min " + seconds + " sec";
           }
 
-          let new_event = new Event(
+          return new Event(
             visit_id,
             event2.event_type,
             snake_to_title_case(event2.event_type),
             date2,
             duration
           );
-          // console.log(new_event);
-          return new_event;
         }, events_of_visit_id).reverse();
-        // console.log(events);
-
-        // resolve state
 
         this.visits.unshift(this.create_visit(events));
         // console.log(this.visits);
