@@ -21,7 +21,7 @@
       <ul id="visit-list">
         <li v-for="(visit, i) in visits" :key="i">
           <ul id="visit-header">
-            <li id="indicator" :class="visit.state"></li>
+            <li id="indicator" :class="[ visit.state, { in_progress: visit.in_progress } ]"></li>
             <li class="spacer"></li>
             <li>{{ visit.timestamp.toLocaleDateString('da-DK') }}</li>
             <li class="spacer"></li>
@@ -61,13 +61,14 @@
 import axios from 'axios'
 
 class Visit {
-  constructor(state, id, timestamp, desc, duration, events) {
+  constructor(state, id, timestamp, desc, duration, events, in_progress) {
       this.state = state;
       this.id = id;
       this.timestamp = timestamp;
       this.desc = desc;
       this.duration = duration;
       this.events = events;
+      this.in_progress = in_progress;
   }
 }
 
@@ -171,6 +172,13 @@ export default {
             "patient_id": 1,
             "timestamp": "2021-05-17T00:05:56.000000",
             "visit_id": 3
+        },
+        {
+            "event_type": "left_bed",
+            "patient_full_name": "test_patient",
+            "patient_id": 1,
+            "timestamp": "2021-05-18T09:21:43.000000",
+            "visit_id": 4
         }
     ],
     "success": true
@@ -218,17 +226,14 @@ export default {
 
       let minutes = Math.floor(diff/1000/60);
       let seconds = Math.floor(diff/1000 - minutes*60);
-      let duration = minutes + " min " + seconds + " sec"
+      // let duration = minutes + " min " + seconds + " sec";
 
       // Reseolve visitstate and description
       let state = "";
       let desc = "";
+      let in_progress = false;
       // console.log(events[events.length-1]);
-      if (events[0].type !== "arrived_at_bed") {
-        state = "in_progress";
-        desc = "In progress";
-      }
-      else if (events.length < 4) {
+      if (events.length < 4) {
         state = "incomplete";
         desc = "Returned to bed";
       }
@@ -237,13 +242,31 @@ export default {
         desc = "Successful visit"
       }
 
+      if (events[0].type !== "arrived_at_bed") {
+        in_progress = true;
+        desc = "In progress";
+
+        // date_now = (new Date()).getTime();
+        diff = (new Date()).getTime() - events[events.length-1].timestamp.getTime();
+        minutes = Math.floor(diff/1000/60);
+        seconds = Math.floor(diff/1000 - minutes*60);
+      }
+      
+      let duration = minutes + " min " + seconds + " sec";
+
+      if (minutes >= 30) {
+        state = "failed";
+        desc = "Failed bathroom visit";
+      }
+
       let visit = new Visit(
         state,
         events[0].visit_id,
         events[0].timestamp,
         desc,
         duration,
-        events
+        events,
+        in_progress
       );
 
       return visit
