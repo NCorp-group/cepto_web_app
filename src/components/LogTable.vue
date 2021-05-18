@@ -179,6 +179,27 @@ export default {
             "patient_id": 1,
             "timestamp": "2021-05-18T09:21:43.000000",
             "visit_id": 4
+        },
+        {
+            "event_type": "left_bed",
+            "patient_full_name": "test_patient",
+            "patient_id": 1,
+            "timestamp": "2021-05-18T09:23:43.000000",
+            "visit_id": 5
+        },
+        {
+            "event_type": "left_bed",
+            "patient_full_name": "test_patient",
+            "patient_id": 1,
+            "timestamp": "2021-05-18T09:34:43.000000",
+            "visit_id": 6
+        },
+        {
+            "event_type": "left_bed",
+            "patient_full_name": "test_patient",
+            "patient_id": 1,
+            "timestamp": "2021-05-18T10:21:43.000000",
+            "visit_id": 7
         }
     ],
     "success": true
@@ -397,6 +418,7 @@ export default {
   },
   mounted() {
     setInterval(this.fetch_logs(), 5000);
+    setInterval(this.process_data(), 1000);
   }
 };
 </script>
@@ -408,8 +430,11 @@ export default {
 #logs {
   /* padding: 0px 200px; */
   min-width: 800px;
+  height: 100%;
   text-align: left;
   color: #F6F6F6;
+  padding: 0 50px;
+  overflow: auto;
 }
 
 /* VISIT COMPONENTS */
