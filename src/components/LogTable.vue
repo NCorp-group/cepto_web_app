@@ -3,7 +3,7 @@
     <div id="logs">
       <h1>Patient Name</h1>
       <h4>Event Logs</h4>
-      <button class="btn" type="button" @click="on_refresh">
+      <!-- <button class="btn" type="button" @click="on_refresh">
         Fetch
       </button>
       <button class="btn" type="button" @click="on_log">
@@ -17,7 +17,7 @@
       </button>
       <button class="btn" type="button" @click="print_data">
         Log visits
-      </button>
+      </button> -->
       <ul id="visit-list">
         <li v-for="(visit, i) in visits" :key="i">
           <ul id="visit-header">
@@ -407,7 +407,7 @@ export default {
 }
 #logs {
   /* padding: 0px 200px; */
-  width: 800px;
+  min-width: 800px;
   text-align: left;
   color: #F6F6F6;
 }
@@ -415,7 +415,7 @@ export default {
 /* VISIT COMPONENTS */
 #visit-list {
   list-style: none;
-  max-width: 800px;
+  max-width: 1200px;
   padding: 0;
 }
 #event-list {
