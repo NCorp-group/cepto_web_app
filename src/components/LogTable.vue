@@ -1,8 +1,10 @@
 <template>
   <div id="logs-wrapper" class="center-content">
     <div id="logs">
-      <h1>Patient Name</h1>
-      <h4>Event Logs</h4>
+      <div id="logs-header">
+        <h1>Patient Name</h1>
+        <h4>Event Logs</h4>
+      </div>
       <!-- <button class="btn" type="button" @click="on_refresh">
         Fetch
       </button>
@@ -430,18 +432,51 @@ export default {
 #logs {
   /* padding: 0px 200px; */
   min-width: 800px;
-  height: 100%;
   text-align: left;
   color: #F6F6F6;
+  display: flex;
+  flex-direction: column;
+}
+#logs-header {
   padding: 0 50px;
-  overflow: auto;
+  height: 10%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+/* SCROLLBAR */
+/* width */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: transparent; 
+}
+ 
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #2F2F2F;
+  border-radius: 5px;
+  box-shadow: 0 3px 6px #191919;
+  margin: 0 6px 0 0;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #272727; 
 }
 
 /* VISIT COMPONENTS */
 #visit-list {
   list-style: none;
   max-width: 1200px;
-  padding: 0;
+  padding: 0 50px;
+  height: 100%;
+  overflow: auto;
+  margin: 0;
 }
 #event-list {
   list-style: none;
