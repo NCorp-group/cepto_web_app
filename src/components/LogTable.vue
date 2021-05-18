@@ -194,7 +194,10 @@ export default {
     fetch_logs() {
       this.$http.command = "fetch-events";
       axios.get("http://" + this.$http.ip + ":" + this.$http.port + "/" + this.$http.command + "/" + this.$user.username + "," + this.$user.password)
-        .then(response => this.api_data = response.data.events)
+        .then(response => {
+          this.api_data = response.data.events
+          this.process_api_data();
+        })
         .catch(error => console.log(error));
     },
     create_event(raw_event) {
@@ -289,41 +292,84 @@ export default {
         }, events_of_visit_id).reverse();
 
         this.visits.unshift(this.create_visit(events));
-        // console.log(this.visits);
       });
     },
     process_api_data() {
+      this.visits = [];
+
       if (this.api_data == null) {
         console.log("No data to show yet.");
         return;
       }
 
-      var visit_ids = this.api_data.map(function(event) { return event.visit_id});
-      var visit_id_set = new Set(visit_ids);
+      // Extract visit ids from all events
+      let visit_ids = this.api_data.map(function(event) { return event.visit_id });
+      // Create set of the visit ids
+      let visit_id_set = new Set(visit_ids);
 
+      // For each visit id create a visit to log
       visit_id_set.forEach(visit_id => {
-        var events = [];
-        events = this.api_data.filter(event => event.visit_id === visit_id).map(
-          event => {
-            let new_event = this.create_event(event);
-            return new_event;
+        let events_of_visit_id = this.api_data.filter(event => event.visit_id === visit_id);
+
+        // ADJACENT MAP to refer to last element
+        let events = map_adjacent((event1, event2) => {
+
+          let date2 = new Date(event2.timestamp);
+          
+          let duration = "";
+          if (event1 == null) {
+            duration = "-";
           }
-        ).reverse();
+          else {
+            let date1 = new Date(event1.timestamp);
+            let diff = date2.getTime() - date1.getTime();
+            let minutes = Math.floor(diff/1000/60);
+            let seconds = Math.floor(diff/1000 - minutes * 60);
+            duration += minutes + " min " + seconds + " sec";
+          }
 
-        // resolve state
-        var state = "";
-        if (events[events.length-1].event_type !== "arrived_at_bed") {
-          state = "in_progress";
-        }
-        else if (events.length < 4) {
-          state = "incomplete";
-        }
-        else if (events.length == 4) {
-          state = "complete";
-        }
+          return new Event(
+            visit_id,
+            event2.event_type,
+            snake_to_title_case(event2.event_type),
+            date2,
+            duration
+          );
+        }, events_of_visit_id).reverse();
 
-        this.visits.unshift(this.create_visit(events, state));
+        this.visits.unshift(this.create_visit(events));
       });
+      // if (this.api_data == null) {
+      //   console.log("No data to show yet.");
+      //   return;
+      // }
+
+      // var visit_ids = this.api_data.map(function(event) { return event.visit_id});
+      // var visit_id_set = new Set(visit_ids);
+
+      // visit_id_set.forEach(visit_id => {
+      //   var events = [];
+      //   events = this.api_data.filter(event => event.visit_id === visit_id).map(
+      //     event => {
+      //       let new_event = this.create_event(event);
+      //       return new_event;
+      //     }
+      //   ).reverse();
+
+      //   // resolve state
+      //   var state = "";
+      //   if (events[events.length-1].event_type !== "arrived_at_bed") {
+      //     state = "in_progress";
+      //   }
+      //   else if (events.length < 4) {
+      //     state = "incomplete";
+      //   }
+      //   else if (events.length == 4) {
+      //     state = "complete";
+      //   }
+
+      //   this.visits.unshift(this.create_visit(events, state));
+      // });
     }
   },
   mounted() {
