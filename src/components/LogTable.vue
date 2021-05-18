@@ -385,37 +385,6 @@ export default {
 
         this.visits.unshift(this.create_visit(events));
       });
-      // if (this.api_data == null) {
-      //   console.log("No data to show yet.");
-      //   return;
-      // }
-
-      // var visit_ids = this.api_data.map(function(event) { return event.visit_id});
-      // var visit_id_set = new Set(visit_ids);
-
-      // visit_id_set.forEach(visit_id => {
-      //   var events = [];
-      //   events = this.api_data.filter(event => event.visit_id === visit_id).map(
-      //     event => {
-      //       let new_event = this.create_event(event);
-      //       return new_event;
-      //     }
-      //   ).reverse();
-
-      //   // resolve state
-      //   var state = "";
-      //   if (events[events.length-1].event_type !== "arrived_at_bed") {
-      //     state = "in_progress";
-      //   }
-      //   else if (events.length < 4) {
-      //     state = "incomplete";
-      //   }
-      //   else if (events.length == 4) {
-      //     state = "complete";
-      //   }
-
-      //   this.visits.unshift(this.create_visit(events, state));
-      // });
     }
   },
   mounted() {
