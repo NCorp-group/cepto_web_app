@@ -388,7 +388,7 @@ export default {
     }
   },
   mounted() {
-    setInterval(() => { this.fetch_logs() }, 5000);
+    setInterval(() => { this.fetch_logs() }, 1000);
     //setInterval(this.process_data(), 1000);
   }
 };
