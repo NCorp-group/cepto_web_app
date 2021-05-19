@@ -226,7 +226,9 @@ export default {
       this.$http.command = "fetch-events";
       axios.get("http://" + this.$http.ip + ":" + this.$http.port + "/" + this.$http.command + "/" + this.$user.username + "," + this.$user.password)
         .then(response => {
-          this.api_data = response.data.events
+          console.log("FETCHING");
+          console.log(response);
+          this.api_data = response.data.events;
           this.process_api_data();
         })
         .catch(error => console.log(error));
@@ -388,8 +390,8 @@ export default {
     }
   },
   mounted() {
-    setInterval(this.fetch_logs(), 5000);
-    setInterval(this.process_data(), 1000);
+    setInterval(() => { this.fetch_logs() }, 5000);
+    //setInterval(this.process_data(), 1000);
   }
 };
 </script>
@@ -418,11 +420,15 @@ export default {
 /* width */
 ::-webkit-scrollbar {
   width: 10px;
+  /* right: -10px !important; */
+  /* left: -10px; */
 }
 
 /* Track */
 ::-webkit-scrollbar-track {
-  background: transparent; 
+  background: transparent;
+  padding-right: 5px; 
+  /* border: solid 2px black; */
 }
  
 /* Handle */
@@ -430,7 +436,6 @@ export default {
   background: #2F2F2F;
   border-radius: 5px;
   box-shadow: 0 3px 6px #191919;
-  margin: 0 6px 0 0;
 }
 
 /* Handle on hover */
