@@ -226,8 +226,6 @@ export default {
       this.$http.command = "fetch-events";
       axios.get("http://" + this.$http.ip + ":" + this.$http.port + "/" + this.$http.command + "/" + this.$user.username + "," + this.$user.password)
         .then(response => {
-          console.log("FETCHING");
-          console.log(response);
           this.api_data = response.data.events;
           this.process_api_data();
         })
