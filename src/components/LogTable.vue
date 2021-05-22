@@ -92,7 +92,7 @@ class Event {
 }
 
 // Adjacent map functionality
-// Applies a mapping function to adjacent objects in a list or an array
+// Applies a mapping function to adjacent objects in an array
 const map_adjacent = (mapping, array) => {
   const {length} = array, size = length, result = new Array(size);
   for (let i = 0; i < size; i++) result[i] = mapping(array[i-1], array[i]);
@@ -245,7 +245,6 @@ export default {
       axios.get("http://" + this.$http.ip + ":" + this.$http.port + "/" + this.$http.command + "/" + this.$user.username + "," + this.$user.password)
         .then(response => {
           this.api_data = response.data.events; // Place the events list from the response into api_data
-          this.process_api_data();              // Process the api data events list
         })
         .catch(error => console.log(error));
     },
@@ -306,14 +305,16 @@ export default {
         in_progress = true;
         desc = "In progress";
 
-        //
+        // As the visit has not yet finished, the date should be calculated from the current time
+        // This way we also get a simple timer on screen
         diff = (new Date()).getTime() - events[events.length-1].timestamp.getTime();
         minutes = Math.floor(diff/1000/60);
         seconds = Math.floor(diff/1000 - minutes*60);
       }
-      
+      // Assemble duration string
       let duration = minutes + " min " + seconds + " sec";
 
+      // Case: The visit has taken over 30 min, thus the caregiver should be "notified" with an indicator
       if (minutes >= 30) {
         state = "failed";
         desc = "Failed bathroom visit";
@@ -331,6 +332,9 @@ export default {
 
       return visit
     },
+    // Processes test data
+    // Does the same as process_api_data but for internal date object.
+    // DEPRECATED
     process_data() {
       this.visits = [];
 
@@ -377,9 +381,16 @@ export default {
         this.visits.unshift(this.create_visit(events));
       });
     },
+    // Processes API data
+    // Iterates through the internal api_data variable holding the most recent data from the CEPTO Web API
+    // Determines visits and events for each visit
+    // Processes data ready to render to the DOM through the bound visit list
     process_api_data() {
+      // Clear all previous visits
       this.visits = [];
 
+      // Case: No data is received from the API
+      // This could be due to the API being down, or somehow giving undefined or null data
       if (this.api_data == null) {
         console.log("No data to show yet.");
         return;
@@ -390,27 +401,36 @@ export default {
       // Create set of the visit ids
       let visit_id_set = new Set(visit_ids);
 
-      // For each visit id create a visit to log
+      // For each visit id in the set create a visit to log
       visit_id_set.forEach(visit_id => {
+        // Find all events with the current visit id, and place the raw data in this events_of_visit_id array
         let events_of_visit_id = this.api_data.filter(event => event.visit_id === visit_id);
 
         // ADJACENT MAP to refer to last element
+        // Purpose is to be able to refer to timestamp of last event, and as such calculate the time since the last event occured
         let events = map_adjacent((event1, event2) => {
-
-          let date2 = new Date(event2.timestamp);
           
+          let date2 = new Date(event2.timestamp);
           let duration = "";
+          // Case: First iteration - looking at null and the first event in the list
           if (event1 == null) {
-            duration = "-";
+            duration = "-"; // Time since last event should just be indicated with a null "-" entrance to the table
           }
+          // Case: There is a previous event
           else {
             let date1 = new Date(event1.timestamp);
+
+            // Calculate time since last event in minutes and seconds
             let diff = date2.getTime() - date1.getTime();
             let minutes = Math.floor(diff/1000/60);
             let seconds = Math.floor(diff/1000 - minutes * 60);
+
+            // Assemble the furation string to render
             duration += minutes + " min " + seconds + " sec";
           }
 
+          // As such for each event with a visit id of the current visit (hence events in events_of_visit_id)
+          // return an Event class instance
           return new Event(
             visit_id,
             event2.event_type,
@@ -418,15 +438,18 @@ export default {
             date2,
             duration
           );
-        }, events_of_visit_id).reverse();
+        }, events_of_visit_id).reverse(); // Reverses the output event list as this will be more user friendly and intuitive to read when rendered
 
+        // Pushes the most recent visit to the front of the internal visits array
+        // Thus the most recent visit will be at the top of the renders list of visits
         this.visits.unshift(this.create_visit(events));
       });
     }
   },
   mounted() {
-    setInterval(() => { this.fetch_logs() }, 5000);
-    //setInterval(this.process_data(), 1000);
+    setInterval(() => { this.fetch_logs() }, 1000);       // Fetch events from API asynchronously from processing the fetched data
+    setInterval(() => { this.process_api_data() }, 1000); // Process the fethces API data every second
+    //setInterval(() => { this.process_data() }, 1000);   // DEPRECATED used to render test data
   }
 };
 </script>
