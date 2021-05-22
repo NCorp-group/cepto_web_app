@@ -13,6 +13,7 @@
 </template>
 
 <script>
+//Vue component export
 export default {
   name: 'LoginBox',
   data() {

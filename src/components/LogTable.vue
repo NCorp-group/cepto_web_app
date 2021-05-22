@@ -5,6 +5,7 @@
         <h1>Patient Name</h1>
         <h4>Event Logs</h4>
       </div>
+      <!-- Debug buttons. Deprecated. -->
       <!-- <button class="btn" type="button" @click="on_refresh">
         Fetch
       </button>
@@ -20,8 +21,10 @@
       <button class="btn" type="button" @click="print_data">
         Log visits
       </button> -->
+      <!-- Outer list of visits -->
       <ul id="visit-list">
         <li v-for="(visit, i) in visits" :key="i">
+          <!-- Data for each visit structured in linear list -->
           <ul id="visit-header">
             <li id="indicator" :class="[ visit.state, { in_progress: visit.in_progress } ]"></li>
             <li class="spacer"></li>
@@ -33,6 +36,7 @@
             <li class="spacer"></li>
             <li>{{ visit.events.length }} events logged</li>
           </ul>
+          <!-- Table of events for each visit -->
           <table id="event-list">
             <thead>
               <tr>
@@ -62,28 +66,33 @@
 <script>
 import axios from 'axios'
 
+// Pre-declared visit class, holds all information pertaining to a visit,
+// processed from raw data, fetched from the API, including a list of events
 class Visit {
   constructor(state, id, timestamp, desc, duration, events, in_progress) {
-      this.state = state;
-      this.id = id;
-      this.timestamp = timestamp;
-      this.desc = desc;
-      this.duration = duration;
-      this.events = events;
-      this.in_progress = in_progress;
+      this.state = state;             // State of the visit, determines colour of indicator
+      this.id = id;                   // The visit's ID
+      this.timestamp = timestamp;     // Datetime object for the start of the visit
+      this.desc = desc;               // Description for the visit
+      this.duration = duration;       // Duration of the visit
+      this.events = events;           // List of events pertaining to visit
+      this.in_progress = in_progress; // Determines how to render indicator
   }
 }
-
+// Pre-declared event class, holds all data pertaining to a single event,
+// data processed from raw json, fetched from the API
 class Event {
   constructor(visit_id, type, desc, timestamp, time_since_last) {
-      this.visit_id = visit_id;
-      this.type = type;
-      this.desc = desc;
-      this.timestamp = timestamp;
-      this.time_since_last = time_since_last;
+      this.visit_id = visit_id;               // Determines which visit the event is part of
+      this.type = type;                       // The kind of event
+      this.desc = desc;                       // Event description
+      this.timestamp = timestamp;             // Datetime object for the occurance of the event
+      this.time_since_last = time_since_last; // Duration since last event - string
   }
 }
 
+// Adjacent map functionality
+// Applies a mapping function to adjacent objects in a list or an array
 const map_adjacent = (mapping, array) => {
   const {length} = array, size = length, result = new Array(size);
   for (let i = 0; i < size; i++) result[i] = mapping(array[i-1], array[i]);
@@ -92,148 +101,161 @@ const map_adjacent = (mapping, array) => {
 
 // Snake case to title case
 // https://www.codegrepper.com/code-examples/javascript/snake+case+to+title+case+javascript
+// Used to split at " ", now splits at "_"
 function snake_to_title_case(string) {
   let sentence = string.toLowerCase().split("_");
   for (let i = 0; i < sentence.length; i++) {
     sentence[i] = sentence[i][0].toUpperCase() + sentence[i].slice(1);
   }
-  
   return sentence.join(" ");
 }
 
+// Vue component export
 export default {
   name: "LogTable",
-  data: () => ({ visits: [], api_data: null, data: {
-    "events": [
+  data: () => ({
+    visits: [],     // List of visit instances
+    api_data: null, // Data fetched from the CEPTO Web API
+    data: {         // Mock data for testing purposes
+      "events": [
         {
-            "event_type": "left_bed",
-            "patient_full_name": "test_patient",
-            "patient_id": 1,
-            "timestamp": "2021-05-12T15:45:10.000000",
-            "visit_id": 1
+          "event_type": "left_bed",
+          "patient_full_name": "test_patient",
+          "patient_id": 1,
+          "timestamp": "2021-05-12T15:45:10.000000",
+          "visit_id": 1
         },
         {
-            "event_type": "arrived_at_bathroom",
-            "patient_full_name": "test_patient",
-            "patient_id": 1,
-            "timestamp": "2021-05-12T15:45:36.000000",
-            "visit_id": 1
+          "event_type": "arrived_at_bathroom",
+          "patient_full_name": "test_patient",
+          "patient_id": 1,
+          "timestamp": "2021-05-12T15:45:36.000000",
+          "visit_id": 1
         },
         {
-            "event_type": "left_bathroom",
-            "patient_full_name": "test_patient",
-            "patient_id": 1,
-            "timestamp": "2021-05-12T15:48:26.000000",
-            "visit_id": 1
+          "event_type": "left_bathroom",
+          "patient_full_name": "test_patient",
+          "patient_id": 1,
+          "timestamp": "2021-05-12T15:48:26.000000",
+          "visit_id": 1
         },
         {
-            "event_type": "arrived_at_bed",
-            "patient_full_name": "test_patient",
-            "patient_id": 1,
-            "timestamp": "2021-05-12T15:49:01.000000",
-            "visit_id": 1
+          "event_type": "arrived_at_bed",
+          "patient_full_name": "test_patient",
+          "patient_id": 1,
+          "timestamp": "2021-05-12T15:49:01.000000",
+          "visit_id": 1
         },
         {
-            "event_type": "left_bed",
-            "patient_full_name": "test_patient",
-            "patient_id": 1,
-            "timestamp": "2021-05-16T08:51:03.000000",
-            "visit_id": 2
+          "event_type": "left_bed",
+          "patient_full_name": "test_patient",
+          "patient_id": 1,
+          "timestamp": "2021-05-16T08:51:03.000000",
+          "visit_id": 2
         },
         {
-            "event_type": "arrived_at_bed",
-            "patient_full_name": "test_patient",
-            "patient_id": 1,
-            "timestamp": "2021-05-16T08:56:58.000000",
-            "visit_id": 2
+          "event_type": "arrived_at_bed",
+          "patient_full_name": "test_patient",
+          "patient_id": 1,
+          "timestamp": "2021-05-16T08:56:58.000000",
+          "visit_id": 2
         },
         {
-            "event_type": "left_bed",
-            "patient_full_name": "test_patient",
-            "patient_id": 1,
-            "timestamp": "2021-05-16T23:52:54.000000",
-            "visit_id": 3
+          "event_type": "left_bed",
+          "patient_full_name": "test_patient",
+          "patient_id": 1,
+          "timestamp": "2021-05-16T23:52:54.000000",
+          "visit_id": 3
         },
         {
-            "event_type": "arrived_at_bathroom",
-            "patient_full_name": "test_patient",
-            "patient_id": 1,
-            "timestamp": "2021-05-16T23:53:13.000000",
-            "visit_id": 3
+          "event_type": "arrived_at_bathroom",
+          "patient_full_name": "test_patient",
+          "patient_id": 1,
+          "timestamp": "2021-05-16T23:53:13.000000",
+          "visit_id": 3
         },
         {
-            "event_type": "left_bathroom",
-            "patient_full_name": "test_patient",
-            "patient_id": 1,
-            "timestamp": "2021-05-17T00:04:45.000000",
-            "visit_id": 3
+          "event_type": "left_bathroom",
+          "patient_full_name": "test_patient",
+          "patient_id": 1,
+          "timestamp": "2021-05-17T00:04:45.000000",
+          "visit_id": 3
         },
         {
-            "event_type": "arrived_at_bed",
-            "patient_full_name": "test_patient",
-            "patient_id": 1,
-            "timestamp": "2021-05-17T00:05:56.000000",
-            "visit_id": 3
+          "event_type": "arrived_at_bed",
+          "patient_full_name": "test_patient",
+          "patient_id": 1,
+          "timestamp": "2021-05-17T00:05:56.000000",
+          "visit_id": 3
         },
         {
-            "event_type": "left_bed",
-            "patient_full_name": "test_patient",
-            "patient_id": 1,
-            "timestamp": "2021-05-18T09:21:43.000000",
-            "visit_id": 4
+          "event_type": "left_bed",
+          "patient_full_name": "test_patient",
+          "patient_id": 1,
+          "timestamp": "2021-05-18T09:21:43.000000",
+          "visit_id": 4
         },
         {
-            "event_type": "left_bed",
-            "patient_full_name": "test_patient",
-            "patient_id": 1,
-            "timestamp": "2021-05-18T09:23:43.000000",
-            "visit_id": 5
+          "event_type": "left_bed",
+          "patient_full_name": "test_patient",
+          "patient_id": 1,
+          "timestamp": "2021-05-18T09:23:43.000000",
+          "visit_id": 5
         },
         {
-            "event_type": "left_bed",
-            "patient_full_name": "test_patient",
-            "patient_id": 1,
-            "timestamp": "2021-05-18T09:34:43.000000",
-            "visit_id": 6
+          "event_type": "left_bed",
+          "patient_full_name": "test_patient",
+          "patient_id": 1,
+          "timestamp": "2021-05-18T09:34:43.000000",
+          "visit_id": 6
         },
         {
-            "event_type": "left_bed",
-            "patient_full_name": "test_patient",
-            "patient_id": 1,
-            "timestamp": "2021-05-18T10:21:43.000000",
-            "visit_id": 7
+          "event_type": "left_bed",
+          "patient_full_name": "test_patient",
+          "patient_id": 1,
+          "timestamp": "2021-05-18T10:21:43.000000",
+          "visit_id": 7
         }
-    ],
-    "success": true
-}}),
+      ],
+      "success": true
+    }
+}),
   methods: {
-    on_log() {
-      console.log(this.api_data);
-      //this.process_api_data();
-    },
-    print_data() {
-      console.log(this.visits);
-    },
-    on_refresh() {
-      //this.clear_logs();
-      this.fetch_logs();
-      //this.process_api_data();
-    },
-    clear_logs() {
-      this.visits = [];
-    },
+    // on_log() {
+    //   console.log(this.api_data);
+    //   //this.process_api_data();
+    // },
+    // print_data() {
+    //   console.log(this.visits);
+    // },
+    // on_refresh() {
+    //   //this.clear_logs();
+    //   this.fetch_logs();
+    //   //this.process_api_data();
+    // },
+    // clear_logs() {
+    //   this.visits = [];
+    // },
+
+    // Fetch from API
+    // Makes HTTP GET request to the CEPTO Web API with the current users username and password,
+    // this way the given caregiver will only receive logs for the patient(s) they are attached to.
     fetch_logs() {
       this.$http.command = "fetch-events";
       axios.get("http://" + this.$http.ip + ":" + this.$http.port + "/" + this.$http.command + "/" + this.$user.username + "," + this.$user.password)
         .then(response => {
-          console.log("FETCHING");
-          console.log(response);
-          this.api_data = response.data.events;
-          this.process_api_data();
+          this.api_data = response.data.events; // Place the events list from the response into api_data
+          this.process_api_data();              // Process the api data events list
         })
         .catch(error => console.log(error));
     },
+    // Creates an Event class instance
+    // Takes raw json object and conforms to proper datatypes
+    // Returns Event instance
+    // DEPRECATED as an adjacent map is necessary for time_since_last
     create_event(raw_event) {
+      // Date instances needed for later timezone conversion
+      // as all data from API is in UTC+0
       var date = new Date(raw_event.timestamp);
       var since_last = new Date(raw_event.timestamp);
 
@@ -246,32 +268,45 @@ export default {
 
       return event;
     },
+    // Creates Visit class instance
+    // Takes a list of events that are found to be in the visit
+    // Processes the data from the list of events to derive more user friendly data for the visit
+    // Returns Visit instance
     create_visit(events) {
+      // Find duration of visit in minutes and seconds
       let diff = events[0].timestamp.getTime() - events[events.length-1].timestamp.getTime();
-
       let minutes = Math.floor(diff/1000/60);
       let seconds = Math.floor(diff/1000 - minutes*60);
-      // let duration = minutes + " min " + seconds + " sec";
 
       // Reseolve visitstate and description
       let state = "";
       let desc = "";
       let in_progress = false;
-      // console.log(events[events.length-1]);
+      // Case: #events < 4, the patient must not have gone to the bathroom
       if (events.length < 4) {
         state = "incomplete";
         desc = "Returned to bed";
+        // Deprecated cases, handled in next if statement
+        // // Case: The patient left the bed and returned again
+        // if (events[0].type === "arrived_at_bed") {
+        //   desc = "Returned to bed";
+        // }
+        // // Case: The patient has not come back to bed yet
+        // else {
+        //   desc = "Incomplete visit";
+        // }
       }
+      // Case: The patient went to the bathroom and back again successfully
       else if (events.length == 4) {
         state = "complete";
         desc = "Successful visit"
       }
-
+      // Case: The Patient has not come back to bed yet
       if (events[0].type !== "arrived_at_bed") {
         in_progress = true;
         desc = "In progress";
 
-        // date_now = (new Date()).getTime();
+        //
         diff = (new Date()).getTime() - events[events.length-1].timestamp.getTime();
         minutes = Math.floor(diff/1000/60);
         seconds = Math.floor(diff/1000 - minutes*60);
