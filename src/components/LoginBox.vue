@@ -2,8 +2,10 @@
   <div id="login-box">
     <img src="../assets/logo_85_white.png" alt="CEPTO">
     <form spellcheck="false" action="">
+      <!-- Input fields. Bound to internal Vue.js model, using the input object -->
       <input @keyup.enter="on_login" type="text" name="username" v-model="input.username" placeholder="Username" />
       <input @keyup.enter="on_login" type="password" name="password" v-model="input.password" placeholder="Password" />
+      <!-- Feedback field. Uses Vue bound variables for element content -->
       <p id="feedback" v-bind:style="{ color: feedback.color }">{{ feedback.text }}</p>
       <button class="btn full-width" type="button" @click="on_login">Sign In</button>
     </form>
