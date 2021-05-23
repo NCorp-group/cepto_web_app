@@ -368,20 +368,20 @@ export default {
       visit_id_set.forEach(visit_id => {
         // Find all events with the current visit id, and place the raw data in this events_of_visit_id array
         let events_of_visit_id = this.api_data.filter(event => event.visit_id === visit_id);
-        // ADJACENT MAP to refer to last element
-        // Purpose is to be able to refer to timestamp of last event, and as such calculate the time since the last event occured
+        // ADJACENT MAP to refer to previous element
+        // Purpose is to be able to refer to timestamp of previous event, and as such calculate the time since the previous event occured
         let events = map_adjacent((event1, event2) => {
           
           let date2 = new Date(event2.timestamp);
           let duration = "";
           // Case: First iteration - looking at null and the first event in the list
           if (event1 == null) {
-            duration = "-"; // Time since last event should just be indicated with a null "-" entrance to the table
+            duration = "-"; // Time since previous event should just be indicated with a null "-" entrance to the table
           }
           // Case: There is a previous event
           else {
             let date1 = new Date(event1.timestamp);
-            // Calculate time since last event in minutes and seconds
+            // Calculate time since previous event in minutes and seconds
             let diff = date2.getTime() - date1.getTime();
             let minutes = Math.floor(diff/1000/60);
             let seconds = Math.floor(diff/1000 - minutes * 60);
@@ -406,7 +406,7 @@ export default {
   },
   mounted() {
     setInterval(() => { this.fetch_logs() }, 1000);       // Fetch events from API asynchronously from processing the fetched data
-    setInterval(() => { this.process_api_data() }, 1000); // Process the fethces API data every second
+    setInterval(() => { this.process_api_data() }, 1000); // Process the fetched API data every second
     //setInterval(() => { this.process_data() }, 1000);   // DEPRECATED used to render test data
   }
 };
