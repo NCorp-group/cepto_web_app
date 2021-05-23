@@ -6,7 +6,7 @@
 </template>
 
 <script>
-import LogTable from '../src/components/LogTable'
+import LogTable from '../src/components/LogsTable'
 import SidePanel from '../src/components/SidePanel'
 
 export default {
