@@ -7,12 +7,23 @@ To install all dependencies run
 ```
 npm install
 ```
-Then to run the web application locally run
+Then to build the application run
 ```
-npm run serve
+npm run build
 ```
-
-By default the application will be available at [localhost:8080](http://localhost:8080/).
+If you do not already have the `npm serve` package install it with
+```
+npm install -g serve
+```
+When the application has finished building you can serve it locally with
+```
+serve -s dist
+```
+By default the application will be available at [localhost:5000](http://localhost:5000/).
+But you can change the port with the `-l` flag as such
+```
+server -s dist -l <port>
+```
 
 # Command Short List
 
