@@ -1,4 +1,4 @@
-# CEPTO Web Application
+# Installation
 Clone this repository to your machine.
 Then go to the repository dirctory on your mahcine in a terminal.
 If you don't already have `node.js` and `npm` installed, you'll need that first. You can find documentation here [nodejs.org](nodejs.org).
@@ -20,7 +20,7 @@ When the application has finished building you can serve it locally with
 serve -s dist
 ```
 By default the application will be available at [localhost:5000](http://localhost:5000/).
-But you can change the port with the `-l` flag as such
+But you can change the port with the listen flag `-l` as such
 ```
 server -s dist -l <port>
 ```
