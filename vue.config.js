@@ -1,12 +1,7 @@
-// vue config file
-// module.exports = {
-//     devServer: {
-//         https: false
-//     }
-// } 
+// vue.config.js file to be place in the root of your repository
 
-// module.exports = {
-//     devServer: {
-//         https: false
-//     }
-// };
+module.exports = {
+publicPath: process.env.NODE_ENV === 'production'
+    ? '/my-project/'
+    : '/'
+}

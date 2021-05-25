@@ -65,7 +65,6 @@
 
 <script>
 import axios from 'axios'
-
 // Pre-declared visit class, holds all information pertaining to a visit,
 // processed from raw data, fetched from the API, including a list of events
 class Visit {
@@ -90,7 +89,6 @@ class Event {
       this.time_since_last = time_since_last; // Duration since last event - string
   }
 }
-
 // Adjacent map functionality
 // Applies a mapping function to adjacent objects in an array
 const map_adjacent = (mapping, array) => {
@@ -98,7 +96,6 @@ const map_adjacent = (mapping, array) => {
   for (let i = 0; i < size; i++) result[i] = mapping(array[i-1], array[i]);
   return result;
 }
-
 // Snake case to title case
 // https://www.codegrepper.com/code-examples/javascript/snake+case+to+title+case+javascript
 // Used to split at " ", now splits at "_"
@@ -109,7 +106,6 @@ function snake_to_title_case(string) {
   }
   return sentence.join(" ");
 }
-
 // Vue component export
 export default {
   name: "LogTable",
@@ -221,22 +217,6 @@ export default {
     }
 }),
   methods: {
-    // on_log() {
-    //   console.log(this.api_data);
-    //   //this.process_api_data();
-    // },
-    // print_data() {
-    //   console.log(this.visits);
-    // },
-    // on_refresh() {
-    //   //this.clear_logs();
-    //   this.fetch_logs();
-    //   //this.process_api_data();
-    // },
-    // clear_logs() {
-    //   this.visits = [];
-    // },
-
     // Fetch from API
     // Makes HTTP GET request to the CEPTO Web API with the current users username and password,
     // this way the given caregiver will only receive logs for the patient(s) they are attached to.
@@ -257,14 +237,12 @@ export default {
       // as all data from API is in UTC+0
       var date = new Date(raw_event.timestamp);
       var since_last = new Date(raw_event.timestamp);
-
       var event = new Event(
         raw_event.visit_id,
         raw_event.event_type,
         date,
         since_last.getMinutes()
       );
-
       return event;
     },
     // Creates Visit class instance
@@ -276,7 +254,6 @@ export default {
       let diff = events[0].timestamp.getTime() - events[events.length-1].timestamp.getTime();
       let minutes = Math.floor(diff/1000/60);
       let seconds = Math.floor(diff/1000 - minutes*60);
-
       // Reseolve visitstate and description
       let state = "";
       let desc = "";
@@ -304,7 +281,6 @@ export default {
       if (events[0].type !== "arrived_at_bed") {
         in_progress = true;
         desc = "In progress";
-
         // As the visit has not yet finished, the date should be calculated from the current time
         // This way we also get a simple timer on screen
         diff = (new Date()).getTime() - events[events.length-1].timestamp.getTime();
@@ -313,13 +289,11 @@ export default {
       }
       // Assemble duration string
       let duration = minutes + " min " + seconds + " sec";
-
       // Case: The visit has taken over 30 min, thus the caregiver should be "notified" with an indicator
       if (minutes >= 30) {
         state = "failed";
         desc = "Failed bathroom visit";
       }
-
       let visit = new Visit(
         state,
         events[0].visit_id,
@@ -329,7 +303,6 @@ export default {
         events,
         in_progress
       );
-
       return visit
     },
     // Processes test data
@@ -337,24 +310,19 @@ export default {
     // DEPRECATED
     process_data() {
       this.visits = [];
-
       if (this.data.events == null) {
         console.log("No data to show yet.");
         return;
       }
-
       // Extract visit ids from all events
       let visit_ids = this.data.events.map(function(event) { return event.visit_id });
       // Create set of the visit ids
       let visit_id_set = new Set(visit_ids);
-
       // For each visit id create a visit to log
       visit_id_set.forEach(visit_id => {
         let events_of_visit_id = this.data.events.filter(event => event.visit_id === visit_id);
-
         // ADJACENT MAP to refer to last element
         let events = map_adjacent((event1, event2) => {
-
           let date2 = new Date(event2.timestamp);
           
           let duration = "";
@@ -368,7 +336,6 @@ export default {
             let seconds = Math.floor(diff/1000 - minutes * 60);
             duration += minutes + " min " + seconds + " sec";
           }
-
           return new Event(
             visit_id,
             event2.event_type,
@@ -377,7 +344,6 @@ export default {
             duration
           );
         }, events_of_visit_id).reverse();
-
         this.visits.unshift(this.create_visit(events));
       });
     },
@@ -388,47 +354,40 @@ export default {
     process_api_data() {
       // Clear all previous visits
       this.visits = [];
-
       // Case: No data is received from the API
       // This could be due to the API being down, or somehow giving undefined or null data
       if (this.api_data == null) {
         console.log("No data to show yet.");
         return;
       }
-
       // Extract visit ids from all events
       let visit_ids = this.api_data.map(function(event) { return event.visit_id });
       // Create set of the visit ids
       let visit_id_set = new Set(visit_ids);
-
       // For each visit id in the set create a visit to log
       visit_id_set.forEach(visit_id => {
         // Find all events with the current visit id, and place the raw data in this events_of_visit_id array
         let events_of_visit_id = this.api_data.filter(event => event.visit_id === visit_id);
-
-        // ADJACENT MAP to refer to last element
-        // Purpose is to be able to refer to timestamp of last event, and as such calculate the time since the last event occured
+        // ADJACENT MAP to refer to previous element
+        // Purpose is to be able to refer to timestamp of previous event, and as such calculate the time since the previous event occured
         let events = map_adjacent((event1, event2) => {
           
           let date2 = new Date(event2.timestamp);
           let duration = "";
           // Case: First iteration - looking at null and the first event in the list
           if (event1 == null) {
-            duration = "-"; // Time since last event should just be indicated with a null "-" entrance to the table
+            duration = "-"; // Time since previous event should just be indicated with a null "-" entrance to the table
           }
           // Case: There is a previous event
           else {
             let date1 = new Date(event1.timestamp);
-
-            // Calculate time since last event in minutes and seconds
+            // Calculate time since previous event in minutes and seconds
             let diff = date2.getTime() - date1.getTime();
             let minutes = Math.floor(diff/1000/60);
             let seconds = Math.floor(diff/1000 - minutes * 60);
-
             // Assemble the furation string to render
             duration += minutes + " min " + seconds + " sec";
           }
-
           // As such for each event with a visit id of the current visit (hence events in events_of_visit_id)
           // return an Event class instance
           return new Event(
@@ -439,7 +398,6 @@ export default {
             duration
           );
         }, events_of_visit_id).reverse(); // Reverses the output event list as this will be more user friendly and intuitive to read when rendered
-
         // Pushes the most recent visit to the front of the internal visits array
         // Thus the most recent visit will be at the top of the renders list of visits
         this.visits.unshift(this.create_visit(events));
@@ -448,7 +406,7 @@ export default {
   },
   mounted() {
     setInterval(() => { this.fetch_logs() }, 1000);       // Fetch events from API asynchronously from processing the fetched data
-    setInterval(() => { this.process_api_data() }, 1000); // Process the fethces API data every second
+    setInterval(() => { this.process_api_data() }, 1000); // Process the fetched API data every second
     //setInterval(() => { this.process_data() }, 1000);   // DEPRECATED used to render test data
   }
 };
@@ -473,7 +431,6 @@ export default {
   flex-direction: column;
   justify-content: flex-end;
 }
-
 /* SCROLLBAR */
 /* width */
 ::-webkit-scrollbar {
@@ -481,7 +438,6 @@ export default {
   /* right: -10px !important; */
   /* left: -10px; */
 }
-
 /* Track */
 ::-webkit-scrollbar-track {
   background: transparent;
@@ -495,12 +451,10 @@ export default {
   border-radius: 5px;
   box-shadow: 0 3px 6px #191919;
 }
-
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
   background: #272727; 
 }
-
 /* VISIT COMPONENTS */
 #visit-list {
   list-style: none;
@@ -573,7 +527,6 @@ export default {
   background-color: #F90000 !important;
   border: 2px solid #F90000 !important;
 }
-
 /* EVENT LIST */
 #event-list {
   padding: 20px 15px;
