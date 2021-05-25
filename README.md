@@ -1,6 +1,12 @@
-# Installation
-Clone this repository to your machine.
-Then go to the repository dirctory on your mahcine in a terminal.
+# Cloning the Repository
+Open your preferred terminal and navigate to the directory where you want to clone the repository.<br>
+You can clone the repository with
+```
+git clone https://github.com/NCorp-group/cepto_web_app.git
+```
+
+# Installation & Deployment
+Go to the repository dirctory on your mahcine in a terminal.<br>
 If you don't already have `node.js` and `npm` installed, you'll need that first. You can find documentation here [nodejs.org](nodejs.org).
 
 To install all dependencies run
@@ -20,10 +26,14 @@ When the application has finished building you can serve it locally with
 serve -s dist
 ```
 By default the application will be available at [localhost:5000](http://localhost:5000/).
-But you can change the port with the listen flag `-l` as such
+It is recommended to use the listen flag `-l` to change the port, since the server also runs on port `5000` by default, this can be done by executing the following command
 ```
 server -s dist -l <port>
 ```
+*If you want to deploy the application elsewhere you can do so by deploying the `./dist` folder. Though do be aware that the application is set up to communicate with the server on `localhost:5000`, which is likely not possible to connect with from external hosts.*
+
+# Usage
+When the web application is up and running, you can log into the site with the mock account of `username: caregiver` and `password: caregiver`, which will give you access to all logs in the database if you are running the CEPTO server on your own machine. See how to set up and run the server through the main repository at [https://github.com/NCorp-group/CEPTO](https://github.com/NCorp-group/CEPTO).
 
 # Command Short List
 
