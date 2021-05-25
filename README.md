@@ -1,7 +1,7 @@
 # CEPTO Web Application
 Clone this repository to your machine.
 Then go to the repository dirctory on your mahcine in a terminal.
-If you don't already have 'node.js' and 'npm' installed, you'll need that first. You can find documentation here [nodejs.org](nodejs.org).
+If you don't already have `node.js` and `npm` installed, you'll need that first. You can find documentation here [nodejs.org](nodejs.org).
 
 To install all dependencies run
 ```
